@@ -91,40 +91,35 @@
       "id": "П-2026-003",
       "cat": "Прямая",
       "kind": "Прямая продажа",
-      "status": "active",
+      "status": "archive",
       "title": "Апартаменты с отделкой, 38 м²",
       "addr": "г. Сочи, пер. Учебный, д. 8",
       "price": "9 200 000 ₽",
       "priceNote": "цена продажи",
+      "final": "9 200 000 ₽",
       "area": "38 м²",
       "cadastral": "23:49:0102003:456",
       "cadCost": "7 400 000 ₽",
       "m2": "242 100 ₽/м²",
+      "bargain": "Возможен",
       "house": "12 этажей, 2021 г., монолит, 2 лифта, потолки 3 м, закрытый двор",
       "transport": "10 мин до набережной",
+      "video": "https://www.w3schools.com/html/mov_bbb.mp4",
       "platform": null,
-      "bargain": "Возможен",
-      "dates": [
-        [
-          "Торг",
-          "Возможен"
-        ],
-        [
-          "Оформление",
-          "ДКП, быстрый выход на сделку"
-        ]
-      ],
+      "dates": [],
       "photos": [
         "demo-apart-a",
         "demo-apart-b",
         "demo-apart-c",
         "demo-apart-d",
-        "demo-apart-e"
+        "demo-apart-e",
+        "/images/1787512582915-01.jpg",
+        "/images/1787512584171-1.jpg",
+        "/images/1787512585506-03.jpg"
       ],
       "docs": [
         "Выписка из ЕГРН"
-      ],
-      "video": "https://www.w3schools.com/html/mov_bbb.mp4"
+      ]
     },
     {
       "id": "П-2026-002",
