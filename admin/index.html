@@ -4,10 +4,222 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Админка — ТОРГИ.ПЛЮС</title>
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#2C3E50;--gold:#D4A574;--muted:#7A8A99;--line:#E4E9EE}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#F7F8FA;color:var(--navy);padding:24px}
+.box{max-width:460px;margin:8vh auto;background:#fff;border:1px solid var(--line);border-top:4px solid var(--gold);padding:30px}
+.box h1{font-size:1.3rem;margin-bottom:10px}
+.box p{font-size:.85rem;color:var(--muted);margin-bottom:16px}
+input,select,textarea{width:100%;border:1px solid var(--line);padding:10px 12px;font-family:inherit;font-size:.9rem;margin-bottom:12px;background:#fff}
+textarea{resize:vertical}
+button{background:var(--navy);color:#fff;border:1px solid var(--navy);padding:11px 18px;font-weight:600;font-size:.85rem;cursor:pointer}
+button:hover{background:var(--gold);border-color:var(--gold);color:var(--navy)}
+button.sec{background:#fff;color:var(--navy)}
+button.danger{background:#fff;color:#B23A1E;border-color:#B23A1E}
+header{max-width:1000px;margin:0 auto 20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+header h1{font-size:1.2rem;margin-right:auto}
+#list{max-width:1000px;margin:auto}
+.row{background:#fff;border:1px solid var(--line);padding:14px 16px;margin-bottom:10px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.row b{font-size:.9rem}
+.row .id{color:var(--gold);font-weight:700;font-size:.78rem}
+.row .st{font-size:.66rem;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--gold);padding:3px 8px}
+.row .st.arch{background:var(--navy);color:var(--gold)}
+.row button{padding:7px 12px;font-size:.75rem}
+#editor{max-width:1000px;margin:auto;background:#fff;border:1px solid var(--line);border-top:4px solid var(--gold);padding:26px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
+.grid .full{grid-column:1/-1}
+label{display:block;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.drow{display:flex;gap:10px;margin-bottom:8px}
+.drow input{margin-bottom:0}
+.fileitem{font-size:.8rem;border:1px dashed var(--line);padding:6px 10px;margin-bottom:6px;display:flex;gap:10px;align-items:center}
+.fileitem button{padding:3px 8px;font-size:.7rem}
+.note{font-size:.75rem;color:var(--muted);margin:6px 0 12px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,80px);background:var(--navy);color:#fff;border:1px solid var(--gold);padding:12px 20px;font-size:.82rem;opacity:0;transition:.4s;z-index:9}
+#toast.show{transform:translate(-50%,0);opacity:1}
+.err{color:#B23A1E;font-size:.8rem;margin-top:8px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
-<div id="nc-root"></div>
-<script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+
+<div id="login" class="box">
+  <h1>Админка ТОРГИ.ПЛЮС</h1>
+  <p>Введите персональный токен GitHub. Он хранится только в этом браузере и не передаётся третьим лицам.</p>
+  <input id="token" type="password" placeholder="github_pat_…">
+  <button id="loginBtn">Войти</button>
+  <div class="err" id="loginErr"></div>
+</div>
+
+<div id="app" hidden>
+  <header>
+    <h1>Лоты</h1>
+    <button id="addBtn">＋ Добавить лот</button>
+    <button class="sec" id="reloadBtn">Обновить</button>
+    <button class="sec" id="logoutBtn">Выйти</button>
+  </header>
+  <div id="list"></div>
+
+  <div id="editor" hidden>
+    <div class="grid">
+      <div><label>Номер лота</label><input id="f_id" placeholder="П-2026-006"></div>
+      <div><label>Статус</label><select id="f_status"><option value="active">Текущий лот</option><option value="archive">Архив</option></select></div>
+      <div><label>Категория</label><select id="f_cat"><option>Жилая</option><option>Коммерческая</option><option>Апартаменты</option><option>Прямая</option></select></div>
+      <div><label>Вид реализации</label><select id="f_kind"><option>Аукцион</option><option>Публичное предложение</option><option>Прямая продажа</option><option>Торги</option></select></div>
+      <div class="full"><label>Название лота</label><input id="f_title"></div>
+      <div class="full"><label>Адрес</label><input id="f_addr"></div>
+      <div><label>Цена (начальная / продажи)</label><input id="f_price"></div>
+      <div><label>Подпись цены</label><input id="f_priceNote" placeholder="начальная цена / цена продажи"></div>
+      <div><label>Итоговая цена (для архива)</label><input id="f_final"></div>
+      <div><label>Площадь</label><input id="f_area"></div>
+      <div><label>Кадастровый номер</label><input id="f_cadastral"></div>
+      <div><label>Кадастровая стоимость</label><input id="f_cadCost"></div>
+      <div><label>Цена за м²</label><input id="f_m2"></div>
+      <div><label>Торг (для прямых)</label><input id="f_bargain" placeholder="Возможен / Не возможен"></div>
+      <div class="full"><label>Информация о доме</label><textarea id="f_house" rows="2"></textarea></div>
+      <div class="full"><label>Транспортная доступность</label><textarea id="f_transport" rows="2"></textarea></div>
+      <div><label>Название площадки</label><input id="f_plName"></div>
+      <div><label>Ссылка на площадку</label><input id="f_plUrl"></div>
+      <div class="full"><label>Ссылка на видео (mp4 или YouTube)</label><input id="f_video"></div>
+      <div class="full">
+        <label>Даты и условия</label>
+        <div id="datesRows"></div>
+        <button class="sec" id="addDate" type="button">＋ строка дат</button>
+      </div>
+      <div class="full">
+        <label>Фотографии</label>
+        <div id="photoList"></div>
+        <input id="newPhotos" type="file" accept="image/*" multiple>
+        <div class="note">Фото сжимаются автоматически до ~1 МБ. Первое фото — обложка.</div>
+      </div>
+      <div class="full">
+        <label>Документы (PDF до 1 МБ каждый)</label>
+        <div id="docList"></div>
+        <input id="newDocs" type="file" accept=".pdf" multiple>
+      </div>
+    </div>
+    <p style="margin-top:18px">
+      <button id="saveBtn">Опубликовать</button>
+      <button class="sec" id="cancelBtn" type="button">Отмена</button>
+      <button class="danger" id="delBtn" type="button" style="margin-left:auto">Удалить лот</button>
+    </p>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+const OWNER='Paritettorgi', REPO='paritet-torg.github.io', BRANCH='main';
+let TOKEN=localStorage.getItem('pt_token')||'';
+let LOTS=[], lotsSha='', editing=-1, curPhotos=[], curDocs=[];
+const $=s=>document.querySelector(s);
+const val=id=>$('#'+id).value.trim();
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),3000);}
+function b64d(b){const bin=atob(b);return new TextDecoder().decode(Uint8Array.from(bin,c=>c.charCodeAt(0)));}
+function b64e(t){const u=new TextEncoder().encode(t);let s='';u.forEach(c=>s+=String.fromCharCode(c));return btoa(s);}
+async function gh(p,o={}){o.headers=Object.assign({'Authorization':'Bearer '+TOKEN,'Accept':'application/vnd.github+json'},o.headers||{});const r=await fetch('https://api.github.com/'+p,o);if(!r.ok)throw new Error('GitHub '+r.status);return r.json();}
+async function putFile(path,b64,msg){
+  const body={message:msg,content:b64,branch:BRANCH};
+  try{return await gh('repos/'+OWNER+'/'+REPO+'/contents/'+encodeURI(path),{method:'PUT',body:JSON.stringify(body)});}
+  catch(e){const ex=await gh('repos/'+OWNER+'/'+REPO+'/contents/'+encodeURI(path));body.sha=ex.sha;return gh('repos/'+OWNER+'/'+REPO+'/contents/'+encodeURI(path),{method:'PUT',body:JSON.stringify(body)});}
+}
+
+/* вход */
+$('#loginBtn').onclick=async()=>{TOKEN=$('#token').value.trim();try{await gh('user');localStorage.setItem('pt_token',TOKEN);enter();}catch(e){$('#loginErr').textContent='Не удалось войти. Проверьте токен и права Contents: Read and write.';}};
+$('#logoutBtn').onclick=()=>{localStorage.removeItem('pt_token');location.reload();};
+async function enter(){$('#login').hidden=true;$('#app').hidden=false;await load();}
+
+/* загрузка лотов */
+async function load(){
+  try{
+    const r=await gh('repos/'+OWNER+'/'+REPO+'/contents/lots.json?ref='+BRANCH);
+    lotsSha=r.sha;const d=JSON.parse(b64d(r.content));LOTS=d.lots||d||[];renderList();
+  }catch(e){toast('Ошибка загрузки: '+e.message);}
+}
+function renderList(){
+  $('#list').innerHTML=LOTS.map((l,i)=>`<div class="row">
+    <span class="id">${l.id}</span><b>${l.title}</b>
+    <span class="st ${l.status==='archive'?'arch':''}">${l.status==='archive'?'Архив':'Текущий'}</span>
+    <span style="margin-left:auto"></span>
+    <button onclick="openEditor(${i})">Изменить</button>
+  </div>`).join('')||'<p style="color:var(--muted)">Лотов пока нет.</p>';
+}
+
+/* редактор */
+window.openEditor=function(i){
+  editing=(i===undefined?-1:i);
+  const l=editing>=0?LOTS[editing]:{};
+  $('#f_id').value=l.id||'';$('#f_status').value=l.status||'active';$('#f_cat').value=l.cat||'Жилая';$('#f_kind').value=l.kind||'Аукцион';
+  $('#f_title').value=l.title||'';$('#f_addr').value=l.addr||'';$('#f_price').value=l.price||'';$('#f_priceNote').value=l.priceNote||'';
+  $('#f_final').value=l.final||'';$('#f_area').value=l.area||'';$('#f_cadastral').value=l.cadastral||'';$('#f_cadCost').value=l.cadCost||'';
+  $('#f_m2').value=l.m2||'';$('#f_bargain').value=l.bargain||'';$('#f_house').value=l.house||'';$('#f_transport').value=l.transport||'';
+  $('#f_plName').value=(l.platform&&l.platform.name)||'';$('#f_plUrl').value=(l.platform&&l.platform.url)||'';$('#f_video').value=l.video||'';
+  curPhotos=[...(l.photos||[])];curDocs=[...(l.docs||[])];
+  $('#datesRows').innerHTML='';(l.dates||[]).forEach(d=>addDateRow(d));
+  renderFiles();
+  $('#list').hidden=true;$('#editor').hidden=false;
+};
+function addDateRow(d){
+  const div=document.createElement('div');div.className='drow';
+  div.innerHTML=`<input placeholder="Подпись (Дата торгов / Задаток…)" value="${d&&d.label||''}"><input placeholder="Значение" value="${d&&d.value||''}"><button class="sec" type="button">✕</button>`;
+  div.querySelector('button').onclick=()=>div.remove();
+  $('#datesRows').appendChild(div);
+}
+$('#addDate').onclick=()=>addDateRow();
+function renderFiles(){
+  $('#photoList').innerHTML=curPhotos.map((p,i)=>`<div class="fileitem">${p}<button type="button" onclick="rmPhoto(${i})">✕</button></div>`).join('');
+  $('#docList').innerHTML=curDocs.map((p,i)=>`<div class="fileitem">${p}<button type="button" onclick="rmDoc(${i})">✕</button></div>`).join('');
+}
+window.rmPhoto=i=>{curPhotos.splice(i,1);renderFiles();};
+window.rmDoc=i=>{curDocs.splice(i,1);renderFiles();};
+
+/* сжатие фото */
+function processImage(file){return new Promise(res=>{
+  const img=new Image();const url=URL.createObjectURL(file);
+  img.onload=()=>{let w=img.width,h=img.height;const max=1600;if(w>max){h=Math.round(h*max/w);w=max;}
+    const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);
+    let q=.82,data=c.toDataURL('image/jpeg',q);
+    while(data.length>950*1024&&q>.4){q-=.08;data=c.toDataURL('image/jpeg',q);}
+    URL.revokeObjectURL(url);
+    res({name:file.name.replace(/\.[^.]+$/,'').replace(/[^\wа-яё\-]/i,'-')+'.jpg',b64:data.split(',')[1]});};
+  img.src=url;});}
+function readDoc(file){return new Promise((res,rej)=>{
+  if(file.size>950*1024)return rej(new Error('Файл '+file.name+' больше 1 МБ — сожмите PDF'));
+  const r=new FileReader();r.onload=()=>res({name:file.name.replace(/[^\wа-яё.\-]/i,'-'),b64:r.result.split(',')[1]});r.readAsDataURL(file);});}
+
+/* сохранение */
+$('#saveBtn').onclick=async()=>{
+  try{
+    const np=[...$('#newPhotos').files], nd=[...$('#newDocs').files];
+    for(const f of np){toast('Загрузка фото '+f.name+'…');const o=await processImage(f);await putFile('images/'+Date.now()+'-'+o.name,o.b64,'фото '+$('#f_id').value);curPhotos.push('/images/'+Date.now()+'-'+o.name);}
+    for(const f of nd){toast('Загрузка '+f.name+'…');const o=await readDoc(f);await putFile('docs/'+Date.now()+'-'+o.name,o.b64,'документ '+$('#f_id').value);curDocs.push('/docs/'+Date.now()+'-'+o.name);}
+    const dates=[...$('#datesRows').children].map(r=>({label:r.children[0].value.trim(),value:r.children[1].value.trim()})).filter(d=>d.label&&d.value);
+    const l={id:val('f_id'),cat:val('f_cat'),kind:val('f_kind'),status:val('f_status'),title:val('f_title'),addr:val('f_addr'),
+      price:val('f_price'),priceNote:val('f_priceNote'),final:val('f_final'),area:val('f_area'),cadastral:val('f_cadastral'),
+      cadCost:val('f_cadCost'),m2:val('f_m2'),bargain:val('f_bargain'),house:val('f_house'),transport:val('f_transport'),video:val('f_video'),
+      platform:(val('f_plName')||val('f_plUrl'))?{name:val('f_plName'),url:val('f_plUrl')}:null,
+      dates,photos:curPhotos,docs:curDocs};
+    if(!l.id||!l.title)throw new Error('Заполните номер и название лота');
+    if(editing>=0)LOTS[editing]=l;else LOTS.push(l);
+    toast('Сохранение lots.json…');
+    const r=await putFile('lots.json',b64e(JSON.stringify({lots:LOTS},null,2)),'обновление лотов '+new Date().toLocaleString('ru-RU'));
+    lotsSha=r.content.sha;
+    toast('Опубликовано! Сайт обновится через ~1 минуту.');
+    $('#editor').hidden=true;$('#list').hidden=false;renderList();
+  }catch(e){toast('Ошибка: '+e.message);}
+};
+$('#delBtn').onclick=async()=>{
+  if(editing<0)return toast('Сначала выберите лот');
+  if(!confirm('Удалить лот '+LOTS[editing].id+'?'))return;
+  LOTS.splice(editing,1);
+  await putFile('lots.json',b64e(JSON.stringify({lots:LOTS},null,2)),'удаление лота');
+  $('#editor').hidden=true;$('#list').hidden=false;renderList();toast('Лот удалён');
+};
+$('#addBtn').onclick=()=>openEditor(-1);
+$('#cancelBtn').onclick=()=>{$('#editor').hidden=true;$('#list').hidden=false;};
+$('#reloadBtn').onclick=load;
+
+if(TOKEN)enter();
+</script>
 </body>
 </html>
