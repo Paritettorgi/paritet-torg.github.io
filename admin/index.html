@@ -46,7 +46,7 @@ label{display:block;font-size:.66rem;letter-spacing:.08em;text-transform:upperca
 
 <div id="login" class="box">
   <h1>Админка ТОРГИ.ПЛЮС</h1>
-  <p>Введите персональный токен GitHub. Он хранится только в этом браузере и не передаётся третьим лицам.</p>
+  <p>Введите персональный токен GitHub. Он хранится только в этом браузере.</p>
   <input id="token" type="password" placeholder="github_pat_…">
   <button id="loginBtn">Войти</button>
   <div class="err" id="loginErr"></div>
@@ -88,18 +88,22 @@ label{display:block;font-size:.66rem;letter-spacing:.08em;text-transform:upperca
         <button class="sec" id="addDate" type="button">＋ строка дат</button>
       </div>
       <div class="full">
-        <label>Фотографии</label>
+        <label>Фотографии (уже на сайте)</label>
         <div id="photoList"></div>
+        <label>Добавить новые фото (можно в несколько приёмов)</label>
         <input id="newPhotos" type="file" accept="image/*" multiple>
-        <div class="note">Фото сжимаются автоматически до ~1 МБ. Первое фото — обложка.</div>
+        <div id="pendPhotos"></div>
+        <div class="note">Фото сжимаются автоматически. Первое в списке — обложка.</div>
       </div>
       <div class="full">
-        <label>Документы (PDF до 1 МБ каждый)</label>
+        <label>Документы (уже на сайте, PDF до 1 МБ)</label>
         <div id="docList"></div>
+        <label>Добавить новые документы</label>
         <input id="newDocs" type="file" accept=".pdf" multiple>
+        <div id="pendDocs"></div>
       </div>
     </div>
-    <p style="margin-top:18px">
+    <p style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
       <button id="saveBtn">Опубликовать</button>
       <button class="sec" id="cancelBtn" type="button">Отмена</button>
       <button class="danger" id="delBtn" type="button" style="margin-left:auto">Удалить лот</button>
@@ -111,7 +115,7 @@ label{display:block;font-size:.66rem;letter-spacing:.08em;text-transform:upperca
 <script>
 const OWNER='Paritettorgi', REPO='paritet-torg.github.io', BRANCH='main';
 let TOKEN=localStorage.getItem('pt_token')||'';
-let LOTS=[], lotsSha='', editing=-1, curPhotos=[], curDocs=[];
+let LOTS=[], editing=-1, curPhotos=[], curDocs=[], pendPhotos=[], pendDocs=[];
 const $=s=>document.querySelector(s);
 const val=id=>$('#'+id).value.trim();
 function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),3000);}
@@ -124,16 +128,14 @@ async function putFile(path,b64,msg){
   catch(e){const ex=await gh('repos/'+OWNER+'/'+REPO+'/contents/'+encodeURI(path));body.sha=ex.sha;return gh('repos/'+OWNER+'/'+REPO+'/contents/'+encodeURI(path),{method:'PUT',body:JSON.stringify(body)});}
 }
 
-/* вход */
 $('#loginBtn').onclick=async()=>{TOKEN=$('#token').value.trim();try{await gh('user');localStorage.setItem('pt_token',TOKEN);enter();}catch(e){$('#loginErr').textContent='Не удалось войти. Проверьте токен и права Contents: Read and write.';}};
 $('#logoutBtn').onclick=()=>{localStorage.removeItem('pt_token');location.reload();};
 async function enter(){$('#login').hidden=true;$('#app').hidden=false;await load();}
 
-/* загрузка лотов */
 async function load(){
   try{
     const r=await gh('repos/'+OWNER+'/'+REPO+'/contents/lots.json?ref='+BRANCH);
-    lotsSha=r.sha;const d=JSON.parse(b64d(r.content));LOTS=d.lots||d||[];renderList();
+    const d=JSON.parse(b64d(r.content));LOTS=d.lots||d||[];renderList();
   }catch(e){toast('Ошибка загрузки: '+e.message);}
 }
 function renderList(){
@@ -145,7 +147,6 @@ function renderList(){
   </div>`).join('')||'<p style="color:var(--muted)">Лотов пока нет.</p>';
 }
 
-/* редактор */
 window.openEditor=function(i){
   editing=(i===undefined?-1:i);
   const l=editing>=0?LOTS[editing]:{};
@@ -154,26 +155,34 @@ window.openEditor=function(i){
   $('#f_final').value=l.final||'';$('#f_area').value=l.area||'';$('#f_cadastral').value=l.cadastral||'';$('#f_cadCost').value=l.cadCost||'';
   $('#f_m2').value=l.m2||'';$('#f_bargain').value=l.bargain||'';$('#f_house').value=l.house||'';$('#f_transport').value=l.transport||'';
   $('#f_plName').value=(l.platform&&l.platform.name)||'';$('#f_plUrl').value=(l.platform&&l.platform.url)||'';$('#f_video').value=l.video||'';
-  curPhotos=[...(l.photos||[])];curDocs=[...(l.docs||[])];
+  curPhotos=[...(l.photos||[])];curDocs=[...(l.docs||[])];pendPhotos=[];pendDocs=[];
+  $('#newPhotos').value='';$('#newDocs').value='';
   $('#datesRows').innerHTML='';(l.dates||[]).forEach(d=>addDateRow(d));
-  renderFiles();
+  renderFiles();renderPend();
   $('#list').hidden=true;$('#editor').hidden=false;
 };
 function addDateRow(d){
   const div=document.createElement('div');div.className='drow';
-  div.innerHTML=`<input placeholder="Подпись (Дата торгов / Задаток…)" value="${d&&d.label||''}"><input placeholder="Значение" value="${d&&d.value||''}"><button class="sec" type="button">✕</button>`;
+  div.innerHTML=`<input placeholder="Подпись (Дата торгов / Задаток…)" value="${(d&&d.label)||''}"><input placeholder="Значение" value="${(d&&d.value)||''}"><button class="sec" type="button">✕</button>`;
   div.querySelector('button').onclick=()=>div.remove();
   $('#datesRows').appendChild(div);
 }
 $('#addDate').onclick=()=>addDateRow();
 function renderFiles(){
-  $('#photoList').innerHTML=curPhotos.map((p,i)=>`<div class="fileitem">${p}<button type="button" onclick="rmPhoto(${i})">✕</button></div>`).join('');
-  $('#docList').innerHTML=curDocs.map((p,i)=>`<div class="fileitem">${p}<button type="button" onclick="rmDoc(${i})">✕</button></div>`).join('');
+  $('#photoList').innerHTML=curPhotos.map((p,i)=>`<div class="fileitem">${p}<button type="button" onclick="rmPhoto(${i})">✕</button></div>`).join('')||'<div class="note">Фото пока нет.</div>';
+  $('#docList').innerHTML=curDocs.map((p,i)=>`<div class="fileitem">${p}<button type="button" onclick="rmDoc(${i})">✕</button></div>`).join('')||'<div class="note">Документов пока нет.</div>';
+}
+function renderPend(){
+  $('#pendPhotos').innerHTML=pendPhotos.map((f,i)=>`<div class="fileitem">Новое фото: ${f.name}<button type="button" onclick="rmPendP(${i})">✕</button></div>`).join('');
+  $('#pendDocs').innerHTML=pendDocs.map((f,i)=>`<div class="fileitem">Новый документ: ${f.name}<button type="button" onclick="rmPendD(${i})">✕</button></div>`).join('');
 }
 window.rmPhoto=i=>{curPhotos.splice(i,1);renderFiles();};
 window.rmDoc=i=>{curDocs.splice(i,1);renderFiles();};
+window.rmPendP=i=>{pendPhotos.splice(i,1);renderPend();};
+window.rmPendD=i=>{pendDocs.splice(i,1);renderPend();};
+$('#newPhotos').addEventListener('change',e=>{pendPhotos.push(...e.target.files);e.target.value='';renderPend();});
+$('#newDocs').addEventListener('change',e=>{pendDocs.push(...e.target.files);e.target.value='';renderPend();});
 
-/* сжатие фото */
 function processImage(file){return new Promise(res=>{
   const img=new Image();const url=URL.createObjectURL(file);
   img.onload=()=>{let w=img.width,h=img.height;const max=1600;if(w>max){h=Math.round(h*max/w);w=max;}
@@ -181,18 +190,17 @@ function processImage(file){return new Promise(res=>{
     let q=.82,data=c.toDataURL('image/jpeg',q);
     while(data.length>950*1024&&q>.4){q-=.08;data=c.toDataURL('image/jpeg',q);}
     URL.revokeObjectURL(url);
-    res({name:file.name.replace(/\.[^.]+$/,'').replace(/[^\wа-яё\-]/i,'-')+'.jpg',b64:data.split(',')[1]});};
+    res({name:file.name.replace(/\.[^.]+$/,'').replace(/[^\w\-]/g,'-')+'.jpg',b64:data.split(',')[1]});};
   img.src=url;});}
 function readDoc(file){return new Promise((res,rej)=>{
   if(file.size>950*1024)return rej(new Error('Файл '+file.name+' больше 1 МБ — сожмите PDF'));
-  const r=new FileReader();r.onload=()=>res({name:file.name.replace(/[^\wа-яё.\-]/i,'-'),b64:r.result.split(',')[1]});r.readAsDataURL(file);});}
+  const r=new FileReader();r.onload=()=>res({name:file.name.replace(/[^\w.\-]/g,'-'),b64:r.result.split(',')[1]});r.readAsDataURL(file);});}
 
-/* сохранение */
 $('#saveBtn').onclick=async()=>{
   try{
-    const np=[...$('#newPhotos').files], nd=[...$('#newDocs').files];
-    for(const f of np){toast('Загрузка фото '+f.name+'…');const o=await processImage(f);const ts=Date.now();await putFile('images/'+ts+'-'+o.name,o.b64,'фото '+$('#f_id').value);curPhotos.push('/images/'+ts+'-'+o.name);}
-    for(const f of nd){toast('Загрузка '+f.name+'…');const o=await readDoc(f);const ts=Date.now();await putFile('docs/'+ts+'-'+o.name,o.b64,'документ '+$('#f_id').value);curDocs.push('/docs/'+ts+'-'+o.name);}
+    for(const f of pendPhotos){toast('Загрузка фото '+f.name+'…');const o=await processImage(f);const ts=Date.now();await putFile('images/'+ts+'-'+o.name,o.b64,'фото '+val('f_id'));curPhotos.push('/images/'+ts+'-'+o.name);}
+    for(const f of pendDocs){toast('Загрузка '+f.name+'…');const o=await readDoc(f);const ts=Date.now();await putFile('docs/'+ts+'-'+o.name,o.b64,'документ '+val('f_id'));curDocs.push('/docs/'+ts+'-'+o.name);}
+    pendPhotos=[];pendDocs=[];
     const dates=[...$('#datesRows').children].map(r=>({label:r.children[0].value.trim(),value:r.children[1].value.trim()})).filter(d=>d.label&&d.value);
     const l={id:val('f_id'),cat:val('f_cat'),kind:val('f_kind'),status:val('f_status'),title:val('f_title'),addr:val('f_addr'),
       price:val('f_price'),priceNote:val('f_priceNote'),final:val('f_final'),area:val('f_area'),cadastral:val('f_cadastral'),
@@ -203,13 +211,12 @@ $('#saveBtn').onclick=async()=>{
     if(editing>=0)LOTS[editing]=l;else LOTS.push(l);
     toast('Сохранение lots.json…');
     const r=await putFile('lots.json',b64e(JSON.stringify({lots:LOTS},null,2)),'обновление лотов '+new Date().toLocaleString('ru-RU'));
-    lotsSha=r.content.sha;
     toast('Опубликовано! Сайт обновится через ~1 минуту.');
     $('#editor').hidden=true;$('#list').hidden=false;renderList();
   }catch(e){toast('Ошибка: '+e.message);}
 };
 $('#delBtn').onclick=async()=>{
-  if(editing<0)return toast('Сначала выберите лот');
+  if(editing<0)return toast('Сначала откройте лот');
   if(!confirm('Удалить лот '+LOTS[editing].id+'?'))return;
   LOTS.splice(editing,1);
   await putFile('lots.json',b64e(JSON.stringify({lots:LOTS},null,2)),'удаление лота');
