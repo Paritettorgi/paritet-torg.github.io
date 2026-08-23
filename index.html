@@ -3,345 +3,235 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ТОРГИ.ПЛЮС — торги и прямая продажа недвижимости</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>Админка — ТОРГИ.ПЛЮС</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root{--navy:#2C3E50;--gold:#D4A574;--white:#FFFFFF;--muted:#7A8A99;--line:#E4E9EE}
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Inter',sans-serif;background:var(--white);color:var(--navy)}
-  .wrap{width:min(1160px,92%);margin:0 auto}
-  header{border-bottom:1px solid var(--line)}
-  .top{display:flex;align-items:center;gap:16px;padding:14px 0;flex-wrap:wrap}
-  .logo img{height:88px;width:auto;display:block}
-  nav{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap}
-  nav a{color:var(--navy);text-decoration:none;font-size:.85rem;font-weight:500;padding:8px 12px;border:1px solid transparent;transition:.2s;cursor:pointer}
-  nav a:hover{border-color:var(--gold);color:var(--gold)}
-  nav a.on{border-color:var(--gold);color:var(--gold)}
-  .gold-line{height:3px;background:var(--gold)}
-  main{padding:44px 0 60px;min-height:60vh}
-  .page-head{display:flex;align-items:center;gap:18px;margin-bottom:28px;flex-wrap:wrap}
-  .page-ico{width:56px;height:56px;border:1px solid var(--gold);display:grid;place-items:center;flex:none}
-  .page-head h1{font-size:1.6rem;font-weight:800}
-  .page-head span{color:var(--muted);font-size:.85rem}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:22px}
-  .card{border:1px solid var(--line);background:var(--white);display:flex;flex-direction:column;transition:box-shadow .25s,transform .25s}
-  .card:hover{box-shadow:0 10px 28px rgba(44,62,80,.14);transform:translateY(-3px)}
-  .photo{height:190px;position:relative;overflow:hidden}
-  .photo img{width:100%;height:100%;object-fit:cover}
-  .num{position:absolute;top:10px;right:12px;background:rgba(44,62,80,.85);color:var(--gold);font-size:.72rem;font-weight:600;letter-spacing:.08em;padding:4px 9px}
-  .cat{position:absolute;top:10px;left:12px;background:rgba(255,255,255,.92);border:1px solid var(--gold);color:var(--navy);font-size:.66rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:5px 9px}
-  .cat.arch{background:var(--navy);border-color:var(--navy);color:var(--gold)}
-  .body{padding:18px 18px 20px;display:flex;flex-direction:column;flex:1}
-  .body h3{font-size:1.02rem;font-weight:700;line-height:1.35;margin-bottom:6px}
-  .addr{color:var(--muted);font-size:.83rem;margin-bottom:14px}
-  .rows{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;margin-bottom:16px}
-  .rows div{font-size:.82rem}
-  .rows small{display:block;color:var(--muted);font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;margin-bottom:1px}
-  .price{font-size:1.22rem;font-weight:800;margin-bottom:16px}
-  .price small{color:var(--muted);font-weight:500;font-size:.72rem;display:block}
-  .price.fin{color:var(--gold)}
-  .btn{display:inline-block;text-align:center;background:var(--navy);color:#fff;border:1px solid var(--navy);text-decoration:none;font-weight:600;font-size:.85rem;padding:11px 18px;transition:.2s;cursor:pointer}
-  .btn:hover{background:var(--gold);border-color:var(--gold);color:var(--navy)}
-  .btn.ghost{background:transparent;color:var(--navy)}
-  .btn.ghost:hover{background:var(--navy);color:#fff}
-  .empty{border:1px dashed var(--gold);padding:46px 20px;text-align:center;color:var(--muted);font-size:.92rem}
-  .c-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px}
-  .c-tile{border:1px solid var(--line);padding:28px 24px;text-align:center;transition:.25s}
-  .c-tile:hover{border-color:var(--gold);box-shadow:0 10px 28px rgba(44,62,80,.1)}
-  .c-tile svg{margin:0 auto 14px;display:block}
-  .c-tile h3{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-  .c-tile a{color:var(--navy);font-weight:700;font-size:1.02rem;text-decoration:none}
-  .c-tile a:hover{color:var(--gold)}
-  .c-note{margin-top:26px;color:var(--muted);font-size:.82rem}
-  footer{background:var(--navy);color:#C9D4DE;padding:40px 0 26px}
-  .foot{display:grid;grid-template-columns:1.4fr 1fr;gap:36px;margin-bottom:26px}
-  footer h4{color:var(--gold);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px}
-  footer p{font-size:.82rem;line-height:1.6}
-  footer a{color:#fff;text-decoration:none}footer a:hover{color:var(--gold)}
-  .foot-bottom{border-top:1px solid rgba(212,165,116,.35);padding-top:16px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:.72rem;color:#8FA0B0}
-  .overlay{position:fixed;inset:0;background:rgba(44,62,80,.55);display:none;align-items:flex-start;justify-content:center;padding:4vh 16px;z-index:50;overflow-y:auto}
-  .overlay.show{display:flex}
-  .modal{background:var(--white);width:min(980px,100%);border-top:4px solid var(--gold);position:relative;box-shadow:0 30px 80px rgba(0,0,0,.35)}
-  .m-close{position:absolute;top:12px;right:12px;width:40px;height:40px;background:var(--white);border:1px solid var(--navy);color:var(--navy);font-size:1.1rem;cursor:pointer;transition:.2s;z-index:2}
-  .m-close:hover{background:var(--gold);border-color:var(--gold)}
-  .m-grid{display:grid;grid-template-columns:1.02fr 1fr;gap:28px;padding:28px}
-  .g-main img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;border:1px solid var(--line)}
-  .g-thumbs{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
-  .g-thumbs img{width:72px;height:54px;object-fit:cover;cursor:pointer;border:2px solid transparent;opacity:.75;transition:.2s}
-  .g-thumbs img.on,.g-thumbs img:hover{border-color:var(--gold);opacity:1}
-  .m-video{margin-top:14px}
-  .m-video video,.m-video iframe{width:100%;aspect-ratio:16/9;border:1px solid var(--line);display:block;background:#000}
-  .m-video small{display:block;color:var(--muted);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;margin-top:6px}
-  .m-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-  .m-tags span{font-size:.66rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--gold);color:var(--navy);padding:5px 9px}
-  .m-tags .no{border-color:var(--navy);color:var(--gold);background:var(--navy)}
-  .m-title{font-size:1.35rem;font-weight:800;line-height:1.3;margin-bottom:6px}
-  .m-addr{color:var(--muted);font-size:.88rem;margin-bottom:16px}
-  .m-price{font-size:1.7rem;font-weight:800}
-  .m-price small{display:block;font-size:.75rem;font-weight:500;color:var(--muted)}
-  .m-sec{font-size:.7rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin:20px 0 10px;border-bottom:1px solid var(--line);padding-bottom:6px}
-  .p-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px}
-  .p-grid div{font-size:.85rem}
-  .p-grid div.wide{grid-column:1/-1}
-  .p-grid small{display:block;color:var(--muted);font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1px}
-  .docs a{display:flex;align-items:center;gap:10px;padding:9px 2px;border-bottom:1px dashed var(--line);color:var(--navy);text-decoration:none;font-size:.87rem;font-weight:500;transition:.2s}
-  .docs a:hover{color:var(--gold)}
-  .m-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
-  .src{font-size:.78rem;color:var(--muted);margin-top:14px}
-  .src a{color:var(--navy);font-weight:600}
-  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,80px);background:var(--navy);color:#fff;border:1px solid var(--gold);font-size:.8rem;padding:13px 22px;z-index:99;opacity:0;transition:.4s}
-  .toast.show{transform:translate(-50%,0);opacity:1}
-  @media(max-width:860px){.m-grid{grid-template-columns:1fr}.top{flex-wrap:wrap}nav{margin-left:0}}
+:root{--navy:#2C3E50;--gold:#D4A574;--muted:#7A8A99;--line:#E4E9EE}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#F7F8FA;color:var(--navy);padding:24px}
+.box{max-width:460px;margin:8vh auto;background:#fff;border:1px solid var(--line);border-top:4px solid var(--gold);padding:30px}
+.box h1{font-size:1.3rem;margin-bottom:10px}
+.box p{font-size:.85rem;color:var(--muted);margin-bottom:16px}
+input,select,textarea{width:100%;border:1px solid var(--line);padding:10px 12px;font-family:inherit;font-size:.9rem;margin-bottom:12px;background:#fff}
+textarea{resize:vertical}
+button{background:var(--navy);color:#fff;border:1px solid var(--navy);padding:11px 18px;font-weight:600;font-size:.85rem;cursor:pointer}
+button:hover{background:var(--gold);border-color:var(--gold);color:var(--navy)}
+button.sec{background:#fff;color:var(--navy)}
+button.danger{background:#fff;color:#B23A1E;border-color:#B23A1E}
+header{max-width:1000px;margin:0 auto 20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+header h1{font-size:1.2rem;margin-right:auto}
+#list{max-width:1000px;margin:auto}
+.row{background:#fff;border:1px solid var(--line);padding:14px 16px;margin-bottom:10px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.row b{font-size:.9rem}
+.row .id{color:var(--gold);font-weight:700;font-size:.78rem}
+.row .st{font-size:.66rem;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--gold);padding:3px 8px}
+.row .st.arch{background:var(--navy);color:var(--gold)}
+.row button{padding:7px 12px;font-size:.75rem}
+#editor{max-width:1000px;margin:auto;background:#fff;border:1px solid var(--line);border-top:4px solid var(--gold);padding:26px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
+.grid .full{grid-column:1/-1}
+label{display:block;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.drow{display:flex;gap:10px;margin-bottom:8px}
+.drow input{margin-bottom:0}
+.fileitem{font-size:.8rem;border:1px dashed var(--line);padding:6px 10px;margin-bottom:6px;display:flex;gap:10px;align-items:center}
+.fileitem button{padding:3px 8px;font-size:.7rem}
+.note{font-size:.75rem;color:var(--muted);margin:6px 0 12px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,80px);background:var(--navy);color:#fff;border:1px solid var(--gold);padding:12px 20px;font-size:.82rem;opacity:0;transition:.4s;z-index:9}
+#toast.show{transform:translate(-50%,0);opacity:1}
+.err{color:#B23A1E;font-size:.8rem;margin-top:8px}
+.section{border:1px solid var(--line);padding:14px;margin-bottom:16px;background:#F7F8FA}
+.section h3{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.actions{position:sticky;bottom:0;background:#fff;border-top:2px solid var(--gold);padding:16px;margin:20px -26px -26px;display:flex;gap:10px;flex-wrap:wrap}
+@media(max-width:760px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="wrap top">
-    <a class="logo" href="#" data-page="home"><img src="logo.png" alt="ТОРГИ.ПЛЮС — на шаг впереди"></a>
-    <nav id="nav">
-      <a data-page="home" class="on">Главная</a>
-      <a data-page="zhil">Жилая недвижимость</a>
-      <a data-page="komm">Коммерческая</a>
-      <a data-page="apart">Апартаменты</a>
-      <a data-page="direct">Прямые продажи</a>
-      <a data-page="archive">Архив</a>
-      <a data-page="contacts">Контакты</a>
-    </nav>
-  </div>
-  <div class="gold-line"></div>
-</header>
+<div id="login" class="box">
+  <h1>Админка ТОРГИ.ПЛЮС</h1>
+  <p>Введите персональный токен GitHub.</p>
+  <input id="token" type="password" placeholder="github_pat_…">
+  <button id="loginBtn">Войти</button>
+  <div class="err" id="loginErr"></div>
+</div>
 
-<main><div class="wrap" id="main"></div></main>
+<div id="app" hidden>
+  <header>
+    <h1>Лоты</h1>
+    <button id="addBtn">＋ Добавить лот</button>
+    <button class="sec" id="reloadBtn">Обновить</button>
+    <button class="sec" id="logoutBtn">Выйти</button>
+  </header>
+  <div id="list"></div>
 
-<footer>
-  <div class="wrap">
-    <div class="foot">
-      <div>
-        <h4>О проекте</h4>
-        <p>Каталог объектов недвижимости: торги на электронных площадках и прямые продажи от заказчиков. Информация носит справочный характер и не является публичной офертой. По лотам со сторонних площадок первоисточником являются данные соответствующей площадки.</p>
+  <div id="editor" hidden>
+    <div class="grid">
+      <div><label>Номер лота</label><input id="f_id" placeholder="П-2026-006"></div>
+      <div><label>Статус</label><select id="f_status"><option value="active">Текущий лот</option><option value="archive">Архив</option></select></div>
+      <div><label>Категория</label><select id="f_cat"><option>Жилая</option><option>Коммерческая</option><option>Апартаменты</option><option>Прямая</option></select></div>
+      <div><label>Вид реализации</label><select id="f_kind"><option>Аукцион</option><option>Публичное предложение</option><option>Прямая продажа</option><option>Торги</option></select></div>
+      <div class="full"><label>Название лота</label><input id="f_title"></div>
+      <div class="full"><label>Адрес</label><input id="f_addr"></div>
+      <div><label>Цена (начальная / продажи)</label><input id="f_price"></div>
+      <div><label>Подпись цены</label><input id="f_priceNote" placeholder="начальная цена / цена продажи"></div>
+      <div><label>Итоговая цена (для архива)</label><input id="f_final"></div>
+      <div><label>Площадь</label><input id="f_area"></div>
+      <div><label>Кадастровый номер</label><input id="f_cadastral"></div>
+      <div><label>Кадастровая стоимость</label><input id="f_cadCost"></div>
+      <div><label>Цена за м²</label><input id="f_m2"></div>
+      <div><label>Торг (для прямых)</label><input id="f_bargain" placeholder="Возможен / Не возможен"></div>
+      <div class="full"><label>Информация о доме</label><textarea id="f_house" rows="2"></textarea></div>
+      <div class="full"><label>Транспортная доступность</label><textarea id="f_transport" rows="2"></textarea></div>
+      <div><label>Название площадки</label><input id="f_plName"></div>
+      <div><label>Ссылка на площадку</label><input id="f_plUrl"></div>
+      <div class="full"><label>Ссылка на видео (mp4 или YouTube)</label><input id="f_video"></div>
+      <div class="full">
+        <label>Даты и условия</label>
+        <div id="datesRows"></div>
+        <button class="sec" id="addDate" type="button">＋ строка дат</button>
       </div>
-      <div>
-        <h4>Контакты</h4>
-        <p><a href="mailto:info@paritet-torg.ru">info@paritet-torg.ru</a><br><a href="#">Телеграм-канал</a><br>+7 (000) 000-00-00</p>
+      <div class="full section">
+        <h3>Фотографии</h3>
+        <label>Уже загруженные на сайт:</label>
+        <div id="photoList"></div>
+        <label>Новые (будут добавлены при публикации):</label>
+        <input id="newPhotos" type="file" accept="image/*" multiple>
+        <div id="pendPhotos"></div>
+        <div class="note">Можно добавлять в несколько приёмов. Первое в списке «Уже загруженные» — обложка.</div>
+      </div>
+      <div class="full section">
+        <h3>Документы (PDF до 1 МБ)</h3>
+        <label>Уже загруженные:</label>
+        <div id="docList"></div>
+        <label>Новые (будут добавлены при публикации):</label>
+        <input id="newDocs" type="file" accept=".pdf" multiple>
+        <div id="pendDocs"></div>
       </div>
     </div>
-    <div class="foot-bottom"><span>© 2026 Паритет</span><span>Источники лотов указаны в карточках</span></div>
-  </div>
-</footer>
-
-<div class="overlay" id="overlay">
-  <div class="modal">
-    <button class="m-close" id="mClose" aria-label="Закрыть">✕</button>
-    <div class="m-grid">
-      <div>
-        <div class="g-main"><img id="gMain" src="" alt=""></div>
-        <div class="g-thumbs" id="gThumbs"></div>
-        <div class="m-video" id="mVideo"></div>
-      </div>
-      <div>
-        <div class="m-tags" id="mTags"></div>
-        <h2 class="m-title" id="mTitle"></h2>
-        <div class="m-addr" id="mAddr"></div>
-        <div class="m-price" id="mPrice"></div>
-        <div class="m-sec">Ключевые параметры</div>
-        <div class="p-grid" id="mParams"></div>
-        <div class="m-sec">Сроки и цены</div>
-        <div class="p-grid" id="mDates"></div>
-        <div class="m-sec">Документы</div>
-        <div class="docs" id="mDocs"></div>
-        <div class="m-actions">
-          <button class="btn" id="mCopy">Скопировать ссылку</button>
-          <a class="btn ghost" id="mPlatform" href="#" target="_blank">Открыть площадку</a>
-        </div>
-        <div class="src" id="mSrc"></div>
-      </div>
+    <div class="actions">
+      <button id="saveBtn">Опубликовать</button>
+      <button class="sec" id="cancelBtn" type="button">Отмена (вернуться к списку)</button>
+      <button class="danger" id="delBtn" type="button" style="margin-left:auto">Удалить лот</button>
     </div>
   </div>
 </div>
-<div class="toast" id="toast"></div>
+<div id="toast"></div>
 
 <script>
-/* ---------- вспомогательные функции ---------- */
-/* фото: если это путь/ссылка — используем как есть, иначе заглушка */
-function ph(p,w,h,t){
-  if(p){
-    if(p.startsWith('http'))return p;
-    if(p.startsWith('/'))p=p.slice(1);
-    if(p.includes('/'))return p;
-  }
-  return `https://placehold.co/${w}x${h}/2C3E50/D4A574/png?text=${encodeURIComponent(t)}`;
+const OWNER='Paritettorgi', REPO='paritet-torg.github.io', BRANCH='main';
+let TOKEN=localStorage.getItem('pt_token')||'';
+let LOTS=[], editing=-1, curPhotos=[], curDocs=[], pendPhotos=[], pendDocs=[];
+const $=s=>document.querySelector(s);
+const val=id=>$('#'+id).value.trim();
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),3000);}
+function b64d(b){const bin=atob(b);return new TextDecoder().decode(Uint8Array.from(bin,c=>c.charCodeAt(0)));}
+function b64e(t){const u=new TextEncoder().encode(t);let s='';u.forEach(c=>s+=String.fromCharCode(c));return btoa(s);}
+async function gh(p,o={}){o.headers=Object.assign({'Authorization':'Bearer '+TOKEN,'Accept':'application/vnd.github+json'},o.headers||{});const r=await fetch('https://api.github.com/'+p,o);if(!r.ok)throw new Error('GitHub '+r.status);return r.json();}
+async function putFile(path,b64,msg){
+  const body={message:msg,content:b64,branch:BRANCH};
+  try{return await gh('repos/'+OWNER+'/'+REPO+'/contents/'+encodeURI(path),{method:'PUT',body:JSON.stringify(body)});}
+  catch(e){const ex=await gh('repos/'+OWNER+'/'+REPO+'/contents/'+encodeURI(path));body.sha=ex.sha;return gh('repos/'+OWNER+'/'+REPO+'/contents/'+encodeURI(path),{method:'PUT',body:JSON.stringify(body)});}
 }
-/* даты: поддерживаем старый формат [подпись,значение] и новый {label,value} */
-function dv(d){return Array.isArray(d)?[d[0],d[1]]:[(d&&d.label)||'',(d&&d.value)||''];}
-/* документы: путь к файлу или просто название */
-function docLink(d){
-  if(typeof d==='string'&&(d.includes('/')||d.startsWith('http'))){
-    let u=d.startsWith('/')?d.slice(1):d;
-    let n=u.split('/').pop();
-    try{n=decodeURIComponent(n);}catch(e){}
-    return {url:u,name:n};
-  }
-  return {url:'#',name:(typeof d==='string')?d:'Документ'};
-}
-/* ---------- загрузка данных из lots.json ---------- */
-let LOTS=[];
-async function initSite(){
+
+$('#loginBtn').onclick=async()=>{TOKEN=$('#token').value.trim();try{await gh('user');localStorage.setItem('pt_token',TOKEN);enter();}catch(e){$('#loginErr').textContent='Не удалось войти. Проверьте токен и права Contents: Read and write.';}};
+$('#logoutBtn').onclick=()=>{localStorage.removeItem('pt_token');location.reload();};
+async function enter(){$('#login').hidden=true;$('#app').hidden=false;await load();}
+
+async function load(){
   try{
-    const res = await fetch('lots.json?upd='+Date.now());
-    const data=await res.json();
-    LOTS=data.lots||data||[];
-    LOTS.sort((a,b)=>(b.id||'').localeCompare(a.id||'',undefined,{numeric:true}));
-    renderPage('home');
-    const fromHash=lotFromHash();if(fromHash)openLot(fromHash);
-  }catch(e){
-    document.getElementById('main').innerHTML='<div class="empty">Не удалось загрузить данные лотов.</div>';
-    console.error(e);
-  }
+    const r=await gh('repos/'+OWNER+'/'+REPO+'/contents/lots.json?ref='+BRANCH);
+    const d=JSON.parse(b64d(r.content));LOTS=d.lots||d||[];renderList();
+  }catch(e){toast('Ошибка загрузки: '+e.message);}
+}
+function renderList(){
+  $('#list').innerHTML=LOTS.map((l,i)=>`<div class="row">
+    <span class="id">${l.id}</span><b>${l.title}</b>
+    <span class="st ${l.status==='archive'?'arch':''}">${l.status==='archive'?'Архив':'Текущий'}</span>
+    <span style="margin-left:auto"></span>
+    <button onclick="openEditor(${i})">Изменить</button>
+  </div>`).join('')||'<p style="color:var(--muted)">Лотов пока нет.</p>';
 }
 
-/* ---------- иконки разделов ---------- */
-const ICO={
- home:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A574" stroke-width="1.5"><path d="M3 11l9-8 9 8M5 10v11h14V10M10 21v-6h4v6"/></svg>',
- zhil:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A574" stroke-width="1.5"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6M9 11h.01M15 11h.01"/></svg>',
- komm:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A574" stroke-width="1.5"><path d="M3 21h18M4 21V5h8v16M14 21V9h6v12M7 9h.01M7 13h.01M17 13h.01M17 17h.01"/></svg>',
- apart:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A574" stroke-width="1.5"><path d="M3 21h18M6 21V4h8v17M14 9h4v12M9 8h.01M9 12h.01M9 16h.01M17 13h.01M17 17h.01"/></svg>',
- direct:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A574" stroke-width="1.5"><path d="M20.6 13.4L12 22 2 12V2h10l8.6 8.6a2 2 0 010 2.8z"/><circle cx="7" cy="7" r="1.6"/></svg>',
- archive:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A574" stroke-width="1.5"><path d="M3 7h18v14H3zM3 7l2-4h14l2 4M10 11h4"/></svg>',
- contacts:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A574" stroke-width="1.5"><path d="M22 17v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .4 2 .7 2.9a2 2 0 01-.5 2.1L8 10a16 16 0 006 6l1.3-1.3a2 2 0 012.1-.5c.9.3 1.9.6 2.9.7a2 2 0 011.7 2z"/></svg>'
+window.openEditor=function(i){
+  editing=(i===undefined?-1:i);
+  const l=editing>=0?LOTS[editing]:{};
+  $('#f_id').value=l.id||'';$('#f_status').value=l.status||'active';$('#f_cat').value=l.cat||'Жилая';$('#f_kind').value=l.kind||'Аукцион';
+  $('#f_title').value=l.title||'';$('#f_addr').value=l.addr||'';$('#f_price').value=l.price||'';$('#f_priceNote').value=l.priceNote||'';
+  $('#f_final').value=l.final||'';$('#f_area').value=l.area||'';$('#f_cadastral').value=l.cadastral||'';$('#f_cadCost').value=l.cadCost||'';
+  $('#f_m2').value=l.m2||'';$('#f_bargain').value=l.bargain||'';$('#f_house').value=l.house||'';$('#f_transport').value=l.transport||'';
+  $('#f_plName').value=(l.platform&&l.platform.name)||'';$('#f_plUrl').value=(l.platform&&l.platform.url)||'';$('#f_video').value=l.video||'';
+  curPhotos=[...(l.photos||[])];curDocs=[...(l.docs||[])];pendPhotos=[];pendDocs=[];
+  $('#newPhotos').value='';$('#newDocs').value='';
+  $('#datesRows').innerHTML='';(l.dates||[]).forEach(d=>addDateRow(d));
+  renderFiles();renderPend();
+  $('#list').hidden=true;$('#editor').hidden=false;
 };
-const PAGES={
- home:{t:'Текущие лоты',s:'в порядке публикации',i:'home',f:l=>l.status!=='archive'},
- zhil:{t:'Торги — жилая недвижимость',s:'квартиры и дома на электронных площадках',i:'zhil',f:l=>l.status!=='archive'&&l.cat==='Жилая'},
- komm:{t:'Торги — коммерческая недвижимость',s:'офисы, склады, торговые помещения',i:'komm',f:l=>l.status!=='archive'&&l.cat==='Коммерческая'},
- apart:{t:'Торги — апартаменты',s:'апартаменты и студии',i:'apart',f:l=>l.status!=='archive'&&l.cat==='Апартаменты'},
- direct:{t:'Прямые продажи',s:'объекты от заказчиков, без торгов',i:'direct',f:l=>l.status!=='archive'&&l.cat==='Прямая'},
- archive:{t:'Архив',s:'торги завершены',i:'archive',f:l=>l.status==='archive'},
- contacts:{t:'Контакты',s:'',i:'contacts'}
+function addDateRow(d){
+  const div=document.createElement('div');div.className='drow';
+  div.innerHTML=`<input placeholder="Подпись (Дата торгов / Задаток…)" value="${(d&&d.label)||''}"><input placeholder="Значение" value="${(d&&d.value)||''}"><button class="sec" type="button">✕</button>`;
+  div.querySelector('button').onclick=()=>div.remove();
+  $('#datesRows').appendChild(div);
+}
+$('#addDate').onclick=()=>addDateRow();
+function renderFiles(){
+  $('#photoList').innerHTML=curPhotos.length?curPhotos.map((p,i)=>`<div class="fileitem">${p}<button type="button" onclick="rmPhoto(${i})">✕</button></div>`).join(''):'<div class="note">Фото пока нет.</div>';
+  $('#docList').innerHTML=curDocs.length?curDocs.map((p,i)=>`<div class="fileitem">${p}<button type="button" onclick="rmDoc(${i})">✕</button></div>`).join(''):'<div class="note">Документов пока нет.</div>';
+}
+function renderPend(){
+  $('#pendPhotos').innerHTML=pendPhotos.map((f,i)=>`<div class="fileitem">Новое: ${f.name}<button type="button" onclick="rmPendP(${i})">✕</button></div>`).join('');
+  $('#pendDocs').innerHTML=pendDocs.map((f,i)=>`<div class="fileitem">Новое: ${f.name}<button type="button" onclick="rmPendD(${i})">✕</button></div>`).join('');
+}
+window.rmPhoto=i=>{curPhotos.splice(i,1);renderFiles();};
+window.rmDoc=i=>{curDocs.splice(i,1);renderFiles();};
+window.rmPendP=i=>{pendPhotos.splice(i,1);renderPend();};
+window.rmPendD=i=>{pendDocs.splice(i,1);renderPend();};
+$('#newPhotos').addEventListener('change',e=>{pendPhotos.push(...e.target.files);e.target.value='';renderPend();});
+$('#newDocs').addEventListener('change',e=>{pendDocs.push(...e.target.files);e.target.value='';renderPend();});
+
+function processImage(file){return new Promise(res=>{
+  const img=new Image();const url=URL.createObjectURL(file);
+  img.onload=()=>{let w=img.width,h=img.height;const max=1600;if(w>max){h=Math.round(h*max/w);w=max;}
+    const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);
+    let q=.82,data=c.toDataURL('image/jpeg',q);
+    while(data.length>950*1024&&q>.4){q-=.08;data=c.toDataURL('image/jpeg',q);}
+    URL.revokeObjectURL(url);
+    res({name:file.name.replace(/\.[^.]+$/,'').replace(/[^\w\-]/g,'-')+'.jpg',b64:data.split(',')[1]});};
+  img.src=url;});}
+function readDoc(file){return new Promise((res,rej)=>{
+  if(file.size>950*1024)return rej(new Error('Файл '+file.name+' больше 1 МБ — сожмите PDF'));
+  const r=new FileReader();r.onload=()=>res({name:file.name.replace(/[^\w.\-]/g,'-'),b64:r.result.split(',')[1]});r.readAsDataURL(file);});}
+
+$('#saveBtn').onclick=async()=>{
+  try{
+    for(const f of pendPhotos){toast('Загрузка фото '+f.name+'…');const o=await processImage(f);const ts=Date.now();await putFile('images/'+ts+'-'+o.name,o.b64,'фото '+val('f_id'));curPhotos.push('/images/'+ts+'-'+o.name);}
+    for(const f of pendDocs){toast('Загрузка '+f.name+'…');const o=await readDoc(f);const ts=Date.now();await putFile('docs/'+ts+'-'+o.name,o.b64,'документ '+val('f_id'));curDocs.push('/docs/'+ts+'-'+o.name);}
+    pendPhotos=[];pendDocs=[];
+    const dates=[...$('#datesRows').children].map(r=>({label:r.children[0].value.trim(),value:r.children[1].value.trim()})).filter(d=>d.label&&d.value);
+    const l={id:val('f_id'),cat:val('f_cat'),kind:val('f_kind'),status:val('f_status'),title:val('f_title'),addr:val('f_addr'),
+      price:val('f_price'),priceNote:val('f_priceNote'),final:val('f_final'),area:val('f_area'),cadastral:val('f_cadastral'),
+      cadCost:val('f_cadCost'),m2:val('f_m2'),bargain:val('f_bargain'),house:val('f_house'),transport:val('f_transport'),video:val('f_video'),
+      platform:(val('f_plName')||val('f_plUrl'))?{name:val('f_plName'),url:val('f_plUrl')}:null,
+      dates,photos:curPhotos,docs:curDocs};
+    if(!l.id||!l.title)throw new Error('Заполните номер и название лота');
+    if(editing>=0)LOTS[editing]=l;else LOTS.push(l);
+    toast('Сохранение lots.json…');
+    const r=await putFile('lots.json',b64e(JSON.stringify({lots:LOTS},null,2)),'обновление лотов '+new Date().toLocaleString('ru-RU'));
+    toast('Опубликовано! Сайт обновится через ~1 минуту.');
+    $('#editor').hidden=true;$('#list').hidden=false;renderList();
+  }catch(e){toast('Ошибка: '+e.message);}
 };
-
-const main=document.getElementById('main');
-function cardHTML(l){
-  const arch=l.status==='archive';
-  const rows=(l.dates||[]).map(dv);
-  const dd=n=>{const f=rows.find(x=>x[0]===n);return f?f[1]:'—';};
-  const plat=l.platform&&l.platform.name?l.platform:null;
-  return `<article class="card">
-    <div class="photo">
-      <img src="${ph((l.photos||[])[0],640,400,l.title)}" alt="">
-      <span class="cat ${arch?'arch':''}">${arch?'Архив':l.cat}</span><span class="num">№ ${l.id}</span>
-    </div>
-    <div class="body">
-      <h3>${l.title}</h3><div class="addr">${l.addr}</div>
-      <div class="rows">
-        <div><small>Вид реализации</small>${l.kind||'—'}</div>
-        <div><small>${arch?'Дата торгов':(plat?'Дата торгов':'Торг')}</small>${arch?dd('Дата торгов'):(plat?dd('Дата торгов'):(l.bargain||'—'))}</div>
-        <div><small>Площадь</small>${l.area||'—'}</div>
-        <div><small>${arch?'Начальная цена':'Задаток'}</small>${arch?(l.price||'—'):dd('Задаток')}</div>
-      </div>
-      <div class="price ${arch?'fin':''}">${arch?(l.final||l.price):(l.price||'—')}<small>${arch?('итоговая цена сделки · начальная '+(l.price||'')):(l.priceNote||'')}</small></div>
-      <button class="btn" data-id="${l.id}">Подробнее</button>
-    </div>
-  </article>`;
-}
-function renderPage(key){
-  document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.dataset.page===key));
-  const p=PAGES[key];
-  if(key==='contacts'){
-    main.innerHTML=`
-      <div class="page-head"><div class="page-ico">${ICO.contacts}</div><div><h1>${p.t}</h1></div></div>
-      <div class="c-grid">
-        <div class="c-tile">${ICO.contacts}<h3>Телефон</h3><a href="tel:+70000000000">+7 (000) 000-00-00</a></div>
-        <div class="c-tile"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A574" stroke-width="1.5"><path d="M4 4h16v16H4zM4 7l8 6 8-6"/></svg><h3>E-mail</h3><a href="mailto:info@paritet-torg.ru">info@paritet-torg.ru</a></div>
-        <div class="c-tile"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A574" stroke-width="1.5"><path d="M22 3L2 10l7 3 3 7 10-17z"/></svg><h3>Телеграм</h3><a href="#" target="_blank">Канал «ТОРГИ.ПЛЮС»</a></div>
-      </div>
-      <p class="c-note">Сайт не собирает персональные данные и не использует формы обратной связи.</p>`;
-    return;
-  }
-  const lots=LOTS.filter(p.f);
-  main.innerHTML=`
-    <div class="page-head"><div class="page-ico">${ICO[p.i]}</div>
-      <div><h1>${p.t}</h1><span>${p.s} · лотов: ${lots.length}</span></div></div>
-    ${lots.length?`<div class="grid">${lots.map(cardHTML).join('')}</div>`
-      :'<div class="empty">В этом разделе пока нет лотов — загляните позже.</div>'}`;
-}
-document.getElementById('nav').addEventListener('click',e=>{
-  const a=e.target.closest('a[data-page]');if(a)renderPage(a.dataset.page);
-});
-document.querySelector('.logo').addEventListener('click',e=>{e.preventDefault();renderPage('home');});
-
-/* ---------- карточка лота ---------- */
-const overlay=document.getElementById('overlay');let current=null;
-function openLot(id){try{
-  const l=LOTS.find(x=>x.id===id);if(!l)return;current=l;
-  const arch=l.status==='archive';
-  const plat=l.platform&&l.platform.name?l.platform:null;
-  document.getElementById('mTags').innerHTML=
-    `<span class="no">№ ${l.id}</span>${arch?'<span class="no">Архив</span>':''}<span>${l.cat}</span><span>${l.kind||''}</span>`;
-  document.getElementById('mTitle').textContent=l.title;
-  document.getElementById('mAddr').textContent=l.addr;
-  document.getElementById('mPrice').innerHTML=arch
-    ?`${l.final||l.price}<small>итоговая цена сделки · начальная — ${l.price||'—'}</small>`
-    :`${l.price||'—'}<small>${l.priceNote||''}${l.m2?' · '+l.m2:''}</small>`;
-  document.getElementById('mParams').innerHTML=[
-    ['Площадь',l.area],['Кадастровый номер',l.cadastral],
-    ['Кадастровая стоимость',l.cadCost],['Цена за м²',l.m2],
-    ['Дом',l.house,1],['Транспорт',l.transport,1]
-  ].filter(p=>p[1]).map(p=>`<div class="${p[2]?'wide':''}"><small>${p[0]}</small>${p[1]}</div>`).join('');
-  document.getElementById('mDates').innerHTML=(l.dates||[]).map(d=>{const a=dv(d);return `<div><small>${a[0]}</small>${a[1]}</div>`;}).join('');
-  const docs=(l.docs||[]).map(docLink);
-  document.getElementById('mDocs').innerHTML=docs.length?docs.map(o=>`
-    <a href="${o.url}" target="_blank" rel="noopener"><svg width="18" height="22" viewBox="0 0 18 22" fill="none" stroke="#D4A574" stroke-width="1.4"><path d="M1 1h11l5 5v15H1zM12 1v5h5"/></svg>${o.name}</a>`).join('')
-    :'<div class="src">Документы не добавлены</div>';
-  const plEl=document.getElementById('mPlatform');
-  if(plat){plEl.style.display='';plEl.href=plat.url||'#';plEl.textContent=arch?'Страница лота на площадке':'Открыть площадку: '+plat.name;
-    document.getElementById('mSrc').innerHTML=plat.url?`Источник: <a href="${plat.url}" target="_blank" rel="noopener">${plat.name}</a>`:'Источник: '+plat.name;}
-  else{plEl.style.display='none';document.getElementById('mSrc').textContent='Прямая продажа от заказчика.';}
-  /* галерея */
-  const photos=(l.photos&&l.photos.length)?l.photos:[''];
-  const gm=document.getElementById('gMain'),gt=document.getElementById('gThumbs');
-  gm.src=ph(photos[0],900,675,l.title);
-  gt.innerHTML=photos.map((p,i)=>`<img src="${ph(p,144,108,String(i+1))}" data-i="${i}" class="${i===0?'on':''}" alt="">`).join('');
-  gt.onclick=e=>{const t=e.target.closest('img');if(!t)return;
-    gm.src=ph(photos[+t.dataset.i],900,675,l.title);
-    gt.querySelectorAll('img').forEach(x=>x.classList.remove('on'));t.classList.add('on');};
-  /* видео */
-  const mv=document.getElementById('mVideo');
-  if(l.video){
-    if(/youtube\.com|youtu\.be/.test(l.video)){
-      const yt=l.video.replace(/.*(?:youtu\.be\/|v=)([\w-]{11}).*/,'$1');
-      mv.innerHTML=`<iframe src="https://www.youtube.com/embed/${yt}" title="Видео объекта" frameborder="0" allowfullscreen></iframe><small>Видео объекта</small>`;
-    }else{
-      mv.innerHTML=`<video controls preload="metadata" src="${l.video}"></video><small>Видео объекта</small>`;
-    }
-  }else mv.innerHTML='';
-    overlay.classList.add('show');document.body.style.overflow='hidden';
-}catch(e){console.error(e);toast('Ошибка карточки: '+e.message);}
-}
-function closeLot(){overlay.classList.remove('show');document.body.style.overflow='';
-  if(lotFromHash())history.pushState(null,'',location.pathname+location.search);current=null;}
-function lotFromHash(){const h=decodeURIComponent(location.hash);return h.startsWith('#/lot/')?h.slice(6):null;}
-main.addEventListener('click',e=>{const b=e.target.closest('button[data-id]');if(!b)return;
-  location.hash='#/lot/'+encodeURIComponent(b.dataset.id);});
-window.addEventListener('hashchange',()=>{const id=lotFromHash();id?openLot(id):closeLot();});
-document.getElementById('mClose').onclick=closeLot;
-overlay.addEventListener('click',e=>{if(e.target===overlay)closeLot();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLot();});
-document.getElementById('mCopy').onclick=()=>{
-  if(!current)return;
-  const url=location.origin!=='null'
-    ?location.origin+location.pathname+'#/lot/'+encodeURIComponent(current.id)
-    :'https://paritet-torg.ru/#/lot/'+encodeURIComponent(current.id);
-  (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject())
-    .then(()=>toast('Ссылка скопирована — можно вставлять в Телеграм'))
-    .catch(()=>{const i=document.createElement('input');i.value=url;document.body.appendChild(i);i.select();document.execCommand('copy');i.remove();toast('Ссылка скопирована — можно вставлять в Телеграм');});
+$('#delBtn').onclick=async()=>{
+  if(editing<0)return toast('Сначала откройте лот');
+  if(!confirm('Удалить лот '+LOTS[editing].id+'?'))return;
+  LOTS.splice(editing,1);
+  await putFile('lots.json',b64e(JSON.stringify({lots:LOTS},null,2)),'удаление лота');
+  $('#editor').hidden=true;$('#list').hidden=false;renderList();toast('Лот удалён');
 };
-function toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2600);}
+$('#addBtn').onclick=()=>openEditor(-1);
+$('#cancelBtn').onclick=()=>{$('#editor').hidden=true;$('#list').hidden=false;};
+$('#reloadBtn').onclick=load;
 
-initSite();
+if(TOKEN)enter();
 </script>
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </body>
 </html>
