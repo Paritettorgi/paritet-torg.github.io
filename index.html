@@ -267,7 +267,7 @@ document.querySelector('.logo').addEventListener('click',e=>{e.preventDefault();
 
 /* ---------- карточка лота ---------- */
 const overlay=document.getElementById('overlay');let current=null;
-function openLot(id){
+function openLot(id){try{
   const l=LOTS.find(x=>x.id===id);if(!l)return;current=l;
   const arch=l.status==='archive';
   const plat=l.platform&&l.platform.name?l.platform:null;
