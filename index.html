@@ -174,11 +174,13 @@ function ph(p,w,h,t){
 function dv(d){return Array.isArray(d)?[d[0],d[1]]:[(d&&d.label)||'',(d&&d.value)||''];}
 /* документы: путь к файлу или просто название */
 function docLink(d){
-  if(typeof d==='string'&&(d.startsWith('/')||d.startsWith('http')))
-    return {url:d,name:decodeURIComponent(d.split('/').pop())};
+  if(typeof d==='string'&&(d.startsWith('/')||d.startsWith('http'))){
+    let n=d.split('/').pop();
+    try{n=decodeURIComponent(n);}catch(e){}
+    return {url:d,name:n};
+  }
   return {url:'#',name:(typeof d==='string')?d:'Документ'};
 }
-
 /* ---------- загрузка данных из lots.json ---------- */
 let LOTS=[];
 async function initSite(){
