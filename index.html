@@ -306,7 +306,8 @@ let LOTS = [];
 async function initSite(){
   try {
     const res = await fetch('lots.json');
-    LOTS = await res.json();
+       const data = await res.json();
+    LOTS = data.lots || data;
     renderPage('home');
     const fromHash = lotFromHash();
     if (fromHash) openLot(fromHash);
