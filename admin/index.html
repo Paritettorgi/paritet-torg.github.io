@@ -191,8 +191,8 @@ function readDoc(file){return new Promise((res,rej)=>{
 $('#saveBtn').onclick=async()=>{
   try{
     const np=[...$('#newPhotos').files], nd=[...$('#newDocs').files];
-    for(const f of np){toast('Загрузка фото '+f.name+'…');const o=await processImage(f);await putFile('images/'+Date.now()+'-'+o.name,o.b64,'фото '+$('#f_id').value);curPhotos.push('/images/'+Date.now()+'-'+o.name);}
-    for(const f of nd){toast('Загрузка '+f.name+'…');const o=await readDoc(f);await putFile('docs/'+Date.now()+'-'+o.name,o.b64,'документ '+$('#f_id').value);curDocs.push('/docs/'+Date.now()+'-'+o.name);}
+    for(const f of np){toast('Загрузка фото '+f.name+'…');const o=await processImage(f);const ts=Date.now();await putFile('images/'+ts+'-'+o.name,o.b64,'фото '+$('#f_id').value);curPhotos.push('/images/'+ts+'-'+o.name);}
+    for(const f of nd){toast('Загрузка '+f.name+'…');const o=await readDoc(f);const ts=Date.now();await putFile('docs/'+ts+'-'+o.name,o.b64,'документ '+$('#f_id').value);curDocs.push('/docs/'+ts+'-'+o.name);}
     const dates=[...$('#datesRows').children].map(r=>({label:r.children[0].value.trim(),value:r.children[1].value.trim()})).filter(d=>d.label&&d.value);
     const l={id:val('f_id'),cat:val('f_cat'),kind:val('f_kind'),status:val('f_status'),title:val('f_title'),addr:val('f_addr'),
       price:val('f_price'),priceNote:val('f_priceNote'),final:val('f_final'),area:val('f_area'),cadastral:val('f_cadastral'),
