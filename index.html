@@ -183,7 +183,7 @@ function docLink(d){
 let LOTS=[];
 async function initSite(){
   try{
-    const res=await fetch('lots.json');
+    const res = await fetch('lots.json?upd='+Date.now());
     const data=await res.json();
     LOTS=data.lots||data||[];
     LOTS.sort((a,b)=>(b.id||'').localeCompare(a.id||'',undefined,{numeric:true}));
