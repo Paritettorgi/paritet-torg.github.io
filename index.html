@@ -310,7 +310,8 @@ function openLot(id){try{
       mv.innerHTML=`<video controls preload="metadata" src="${l.video}"></video><small>Видео объекта</small>`;
     }
   }else mv.innerHTML='';
-  overlay.classList.add('show');document.body.style.overflow='hidden';
+    overlay.classList.add('show');document.body.style.overflow='hidden';
+}catch(e){console.error(e);toast('Ошибка карточки: '+e.message);}
 }
 function closeLot(){overlay.classList.remove('show');document.body.style.overflow='';
   if(lotFromHash())history.pushState(null,'',location.pathname+location.search);current=null;}
