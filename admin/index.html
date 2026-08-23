@@ -39,6 +39,9 @@ label{display:block;font-size:.66rem;letter-spacing:.08em;text-transform:upperca
 #toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,80px);background:var(--navy);color:#fff;border:1px solid var(--gold);padding:12px 20px;font-size:.82rem;opacity:0;transition:.4s;z-index:9}
 #toast.show{transform:translate(-50%,0);opacity:1}
 .err{color:#B23A1E;font-size:.8rem;margin-top:8px}
+.section{border:1px solid var(--line);padding:14px;margin-bottom:16px;background:#F7F8FA}
+.section h3{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.actions{position:sticky;bottom:0;background:#fff;border-top:2px solid var(--gold);padding:16px;margin:20px -26px -26px;display:flex;gap:10px;flex-wrap:wrap}
 @media(max-width:760px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -46,7 +49,7 @@ label{display:block;font-size:.66rem;letter-spacing:.08em;text-transform:upperca
 
 <div id="login" class="box">
   <h1>Админка ТОРГИ.ПЛЮС</h1>
-  <p>Введите персональный токен GitHub. Он хранится только в этом браузере.</p>
+  <p>Введите персональный токен GitHub.</p>
   <input id="token" type="password" placeholder="github_pat_…">
   <button id="loginBtn">Войти</button>
   <div class="err" id="loginErr"></div>
@@ -87,27 +90,29 @@ label{display:block;font-size:.66rem;letter-spacing:.08em;text-transform:upperca
         <div id="datesRows"></div>
         <button class="sec" id="addDate" type="button">＋ строка дат</button>
       </div>
-      <div class="full">
-        <label>Фотографии (уже на сайте)</label>
+      <div class="full section">
+        <h3>Фотографии</h3>
+        <label>Уже загруженные на сайт:</label>
         <div id="photoList"></div>
-        <label>Добавить новые фото (можно в несколько приёмов)</label>
+        <label>Новые (будут добавлены при публикации):</label>
         <input id="newPhotos" type="file" accept="image/*" multiple>
         <div id="pendPhotos"></div>
-        <div class="note">Фото сжимаются автоматически. Первое в списке — обложка.</div>
+        <div class="note">Можно добавлять в несколько приёмов. Первое в списке «Уже загруженные» — обложка.</div>
       </div>
-      <div class="full">
-        <label>Документы (уже на сайте, PDF до 1 МБ)</label>
+      <div class="full section">
+        <h3>Документы (PDF до 1 МБ)</h3>
+        <label>Уже загруженные:</label>
         <div id="docList"></div>
-        <label>Добавить новые документы</label>
+        <label>Новые (будут добавлены при публикации):</label>
         <input id="newDocs" type="file" accept=".pdf" multiple>
         <div id="pendDocs"></div>
       </div>
     </div>
-    <p style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+    <div class="actions">
       <button id="saveBtn">Опубликовать</button>
-      <button class="sec" id="cancelBtn" type="button">Отмена</button>
+      <button class="sec" id="cancelBtn" type="button">Отмена (вернуться к списку)</button>
       <button class="danger" id="delBtn" type="button" style="margin-left:auto">Удалить лот</button>
-    </p>
+    </div>
   </div>
 </div>
 <div id="toast"></div>
@@ -169,12 +174,12 @@ function addDateRow(d){
 }
 $('#addDate').onclick=()=>addDateRow();
 function renderFiles(){
-  $('#photoList').innerHTML=curPhotos.map((p,i)=>`<div class="fileitem">${p}<button type="button" onclick="rmPhoto(${i})">✕</button></div>`).join('')||'<div class="note">Фото пока нет.</div>';
-  $('#docList').innerHTML=curDocs.map((p,i)=>`<div class="fileitem">${p}<button type="button" onclick="rmDoc(${i})">✕</button></div>`).join('')||'<div class="note">Документов пока нет.</div>';
+  $('#photoList').innerHTML=curPhotos.length?curPhotos.map((p,i)=>`<div class="fileitem">${p}<button type="button" onclick="rmPhoto(${i})">✕</button></div>`).join(''):'<div class="note">Фото пока нет.</div>';
+  $('#docList').innerHTML=curDocs.length?curDocs.map((p,i)=>`<div class="fileitem">${p}<button type="button" onclick="rmDoc(${i})">✕</button></div>`).join(''):'<div class="note">Документов пока нет.</div>';
 }
 function renderPend(){
-  $('#pendPhotos').innerHTML=pendPhotos.map((f,i)=>`<div class="fileitem">Новое фото: ${f.name}<button type="button" onclick="rmPendP(${i})">✕</button></div>`).join('');
-  $('#pendDocs').innerHTML=pendDocs.map((f,i)=>`<div class="fileitem">Новый документ: ${f.name}<button type="button" onclick="rmPendD(${i})">✕</button></div>`).join('');
+  $('#pendPhotos').innerHTML=pendPhotos.map((f,i)=>`<div class="fileitem">Новое: ${f.name}<button type="button" onclick="rmPendP(${i})">✕</button></div>`).join('');
+  $('#pendDocs').innerHTML=pendDocs.map((f,i)=>`<div class="fileitem">Новое: ${f.name}<button type="button" onclick="rmPendD(${i})">✕</button></div>`).join('');
 }
 window.rmPhoto=i=>{curPhotos.splice(i,1);renderFiles();};
 window.rmDoc=i=>{curDocs.splice(i,1);renderFiles();};
