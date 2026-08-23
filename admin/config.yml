@@ -1,0 +1,53 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "images"
+public_folder: "/images"
+
+collections:
+  - name: "lots"
+    label: "Лоты"
+    files:
+      - name: "all"
+        label: "Все лоты"
+        file: "lots.json"
+        fields:
+          - name: "lots"
+            label: "Лоты"
+            widget: "list"
+            summary: "{{fields.id}} — {{fields.title}}"
+            fields:
+              - {name: "id", label: "Номер лота (например П-2026-006)", widget: "string"}
+              - {name: "cat", label: "Категория", widget: "select", options: ["Жилая", "Коммерческая", "Апартаменты", "Прямая"]}
+              - {name: "kind", label: "Вид реализации", widget: "select", options: ["Аукцион", "Публичное предложение", "Прямая продажа", "Торги"]}
+              - {name: "status", label: "Статус", widget: "select", options: [{value: "active", label: "Текущий лот"}, {value: "archive", label: "Архив"}]}
+              - {name: "title", label: "Название лота", widget: "string"}
+              - {name: "addr", label: "Адрес", widget: "string"}
+              - {name: "price", label: "Начальная цена / цена продажи", widget: "string"}
+              - {name: "priceNote", label: "Подпись цены (начальная цена / цена продажи)", widget: "string", required: false}
+              - {name: "final", label: "Итоговая цена сделки (только для архива)", widget: "string", required: false}
+              - {name: "area", label: "Площадь", widget: "string"}
+              - {name: "cadastral", label: "Кадастровый номер", widget: "string", required: false}
+              - {name: "cadCost", label: "Кадастровая стоимость", widget: "string", required: false}
+              - {name: "m2", label: "Цена за м²", widget: "string", required: false}
+              - {name: "house", label: "Информация о доме", widget: "text", required: false}
+              - {name: "transport", label: "Транспортная доступность", widget: "text", required: false}
+              - {name: "bargain", label: "Торг (Возможен / Не возможен)", widget: "string", required: false}
+              - {name: "video", label: "Ссылка на видео (mp4 или YouTube)", widget: "string", required: false}
+              - name: "platform"
+                label: "Площадка (для прямых продаж оставьте пустым)"
+                widget: "object"
+                required: false
+                fields:
+                  - {name: "name", label: "Название площадки", widget: "string", required: false}
+                  - {name: "url", label: "Ссылка на лот на площадке", widget: "string", required: false}
+              - name: "dates"
+                label: "Даты и условия (добавляйте строки: подпись + значение)"
+                widget: "list"
+                required: false
+                fields:
+                  - {name: "label", label: "Подпись (Дата торгов / Задаток / Шаг…)", widget: "string"}
+                  - {name: "value", label: "Значение (15.09.2026 / 10 %…)", widget: "string"}
+              - {name: "photos", label: "Фотографии (загрузите 4–20 файлов)", widget: "file", multiple: true, required: false}
+              - {name: "docs", label: "Документы (ЕГРН, письмо площадки, планы — PDF)", widget: "file", multiple: true, required: false}
