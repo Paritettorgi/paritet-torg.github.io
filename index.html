@@ -167,7 +167,11 @@
 /* ---------- вспомогательные функции ---------- */
 /* фото: если это путь/ссылка — используем как есть, иначе заглушка */
 function ph(p,w,h,t){
-  if(p&&(p.startsWith('http')||p.startsWith('/')))return p;
+  if(p){
+    if(p.startsWith('http'))return p;
+    if(p.startsWith('/'))p=p.slice(1);
+    if(p.includes('/'))return p;
+  }
   return `https://placehold.co/${w}x${h}/2C3E50/D4A574/png?text=${encodeURIComponent(t)}`;
 }
 /* даты: поддерживаем старый формат [подпись,значение] и новый {label,value} */
