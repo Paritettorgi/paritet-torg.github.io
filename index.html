@@ -195,7 +195,7 @@ function cardHTML(l){
   const d=(n)=>(l.dates.find(x=>x[0]===n)||['','—'])[1];
   return `<article class="card">
     <div class="photo">
-      <img src="https://picsum.photos/seed/${l.photos[0]}/640/400" alt="">
+      <img src="https://placehold.co/640x400/2C3E50/D4A574/png?text=${encodeURIComponent(l.title)}" alt="">
       <span class="cat ${arch?'arch':''}">${arch?'Архив':l.cat}</span><span class="num">№ ${l.id}</span>
     </div>
     <div class="body">
@@ -264,8 +264,8 @@ function openLot(id){
     document.getElementById('mSrc').innerHTML=`Источник: <a href="${l.platform.url}" target="_blank">${l.platform.name}</a>`;}
   else{pl.style.display='none';document.getElementById('mSrc').textContent='Прямая продажа от заказчика.';}
   const gm=document.getElementById('gMain'),gt=document.getElementById('gThumbs');
-  gm.src=`https://picsum.photos/seed/${l.photos[0]}/900/675`;
-  gt.innerHTML=l.photos.map((p,i)=>`<img src="https://picsum.photos/seed/${p}/144/108" data-p="${p}" class="${i===0?'on':''}" alt="">`).join('');
+  gm.src=`https://placehold.co/900x675/2C3E50/D4A574/png?text=${encodeURIComponent(l.title)}`;
+  gt.innerHTML=l.photos.map((p,i)=>`<img src="https://placehold.co/144x108/2C3E50/D4A574/png?text=${i+1}" data-p="${p}" class="${i===0?'on':''}" alt="">`).join('');
   gt.onclick=e=>{const t=e.target.closest('img');if(!t)return;
     gm.src=`https://picsum.photos/seed/${t.dataset.p}/900/675`;
     gt.querySelectorAll('img').forEach(x=>x.classList.remove('on'));t.classList.add('on');};
