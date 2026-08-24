@@ -125,6 +125,12 @@ let TOKEN=localStorage.getItem('pt_token')||'';
 let LOTS=[], editing=-1, curPhotos=[], curDocs=[], pendPhotos=[], pendDocs=[];
 const $=s=>document.querySelector(s);
 const val=id=>$('#'+id).value.trim();
+  function nextId(){
+  const y=new Date().getFullYear();
+  let max=0;
+  for(const l of LOTS){const m=(l.id||'').match(/П-(\d{4})-(\d+)/);if(m&&+m[1]===y&&+m[2]>max)max=+m[2];}
+  return 'П-'+y+'-'+String(max+1).padStart(3,'0');
+}
 function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),3000);}
 function b64d(b){const bin=atob(b);return new TextDecoder().decode(Uint8Array.from(bin,c=>c.charCodeAt(0)));}
 function b64e(t){const u=new TextEncoder().encode(t);let s='';u.forEach(c=>s+=String.fromCharCode(c));return btoa(s);}
@@ -157,7 +163,7 @@ function renderList(){
 window.openEditor=function(i){
   editing=(i===undefined?-1:i);
   const l=editing>=0?LOTS[editing]:{};
-  $('#f_id').value=l.id||'';$('#f_status').value=l.status||'active';$('#f_cat').value=l.cat||'Жилая';$('#f_kind').value=l.kind||'Аукцион';
+   $('#f_id').value=l.id||nextId();$('#f_status').value=l.status||'active';$('#f_cat').value=l.cat||'Жилая';$('#f_kind').value=l.kind||'Аукцион';
   $('#f_title').value=l.title||'';$('#f_addr').value=l.addr||'';$('#f_price').value=l.price||'';$('#f_priceNote').value=l.priceNote||'';
   $('#f_final').value=l.final||'';$('#f_area').value=l.area||'';$('#f_cadastral').value=l.cadastral||'';$('#f_cadCost').value=l.cadCost||'';
   $('#f_m2').value=l.m2||'';$('#f_bargain').value=l.bargain||'';$('#f_houseLabel').value=l.houseLabel||'';$('#f_house').value=l.house||'';$('#f_transport').value=l.transport||'';
@@ -217,7 +223,8 @@ $('#saveBtn').onclick=async()=>{
       cadCost:val('f_cadCost'),m2:val('f_m2'),bargain:val('f_bargain'),houseLabel:val('f_houseLabel'),house:val('f_house'),transport:val('f_transport'),video:val('f_video'),
       platform:(val('f_plName')||val('f_plUrl'))?{name:val('f_plName'),url:val('f_plUrl')}:null,
       dates,photos:curPhotos,docs:curDocs};
-    if(!l.id||!l.title)throw new Error('Заполните номер и название лота');
+        if(!l.id||!l.title)throw new Error('Заполните номер и название лота');
+    if(LOTS.some((x,i)=>x.id===l.id&&i!==editing))throw new Error('Лот с номером '+l.id+' уже существует — номера не должны повторяться');
     if(editing>=0)LOTS[editing]=l;else LOTS.push(l);
     toast('Сохранение lots.json…');
     await putFile('lots.json',b64e(JSON.stringify({lots:LOTS},null,2)),'обновление лотов '+new Date().toLocaleString('ru-RU'));
