@@ -290,7 +290,7 @@ function openLot(id){try{
   document.getElementById('mParams').innerHTML=[
     ['Площадь',l.area],['Кадастровый номер',l.cadastral],
     ['Кадастровая стоимость',l.cadCost],['Цена за м²',l.m2],
-    ['Дом',l.house,1],['Транспорт',l.transport,1]
+    [l.houseLabel||(l.cat==='Земельные участки'?'Участок':'Дом'),l.house,1],['Транспорт',l.transport,1]
   ].filter(p=>p[1]).map(p=>`<div class="${p[2]?'wide':''}"><small>${p[0]}</small>${p[1]}</div>`).join('');
   document.getElementById('mDates').innerHTML=(l.dates||[]).map(d=>{const a=dv(d);return `<div><small>${a[0]}</small>${a[1]}</div>`;}).join('');
   const docs=(l.docs||[]).map(docLink);
