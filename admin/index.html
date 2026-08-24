@@ -59,6 +59,7 @@ label{display:block;font-size:.66rem;letter-spacing:.08em;text-transform:upperca
   <header>
     <h1>Лоты</h1>
     <button id="addBtn">＋ Добавить лот</button>
+    <button class="sec" id="textBtn">Текст «Срочный выкуп»</button>
     <button class="sec" id="reloadBtn">Обновить</button>
     <button class="sec" id="logoutBtn">Выйти</button>
   </header>
@@ -118,12 +119,21 @@ label{display:block;font-size:.66rem;letter-spacing:.08em;text-transform:upperca
     </div>
   </div>
 </div>
+
+<div id="settings" class="box" style="max-width:820px;margin:20px auto" hidden>
+  <h1>Текст раздела «Срочный выкуп»</h1>
+  <p>Каждый абзац отделяйте пустой строкой.</p>
+  <textarea id="buyoutText" rows="12"></textarea>
+  <button id="saveTextBtn">Сохранить текст</button>
+  <button class="sec" id="closeTextBtn">Закрыть</button>
+</div>
+
 <div id="toast"></div>
 
 <script>
 const OWNER='Paritettorgi', REPO='paritet-torg.github.io', BRANCH='main';
 let TOKEN=localStorage.getItem('pt_token')||'';
-let LOTS=[], editing=-1, curPhotos=[], curDocs=[], pendPhotos=[], pendDocs=[];
+let LOTS=[], SETTINGS={}, editing=-1, curPhotos=[], curDocs=[], pendPhotos=[], pendDocs=[];
 const $=s=>document.querySelector(s);
 const val=id=>$('#'+id).value.trim();
 function nextId(){
@@ -141,6 +151,7 @@ async function putFile(path,b64,msg){
   try{return await gh('repos/'+OWNER+'/'+REPO+'/contents/'+encodeURI(path),{method:'PUT',body:JSON.stringify(body)});}
   catch(e){const ex=await gh('repos/'+OWNER+'/'+REPO+'/contents/'+encodeURI(path));body.sha=ex.sha;return gh('repos/'+OWNER+'/'+REPO+'/contents/'+encodeURI(path),{method:'PUT',body:JSON.stringify(body)});}
 }
+function saveLots(msg){return putFile('lots.json',b64e(JSON.stringify(Object.assign({},SETTINGS,{lots:LOTS}),null,2)),msg);}
 
 $('#loginBtn').onclick=async()=>{TOKEN=$('#token').value.trim();try{await gh('user');localStorage.setItem('pt_token',TOKEN);enter();}catch(e){$('#loginErr').textContent='Не удалось войти. Проверьте токен и права Contents: Read and write.';}};
 $('#logoutBtn').onclick=()=>{localStorage.removeItem('pt_token');location.reload();};
@@ -149,7 +160,10 @@ async function enter(){$('#login').hidden=true;$('#app').hidden=false;await load
 async function load(){
   try{
     const r=await gh('repos/'+OWNER+'/'+REPO+'/contents/lots.json?ref='+BRANCH);
-    const d=JSON.parse(b64d(r.content));LOTS=d.lots||d||[];renderList();
+    const d=JSON.parse(b64d(r.content));
+    SETTINGS=(d&&typeof d==='object')?d:{};
+    LOTS=SETTINGS.lots||[];
+    renderList();
   }catch(e){toast('Ошибка загрузки: '+e.message);}
 }
 function renderList(){
@@ -164,7 +178,7 @@ function renderList(){
 window.openEditor=function(i){
   editing=(i===undefined?-1:i);
   const l=editing>=0?LOTS[editing]:{};
-    $('#f_id').value=l.id||nextId();$('#f_status').value=l.status||'active';
+  $('#f_id').value=l.id||nextId();$('#f_status').value=l.status||'active';
   const cs=$('#f_cat');if(l.cat&&![...cs.options].some(o=>o.value===l.cat))cs.add(new Option(l.cat,l.cat));
   cs.value=l.cat||'Квартиры';
   const ks=$('#f_kind');if(l.kind&&![...ks.options].some(o=>o.value===l.kind))ks.add(new Option(l.kind,l.kind));
@@ -178,7 +192,7 @@ window.openEditor=function(i){
   $('#newPhotos').value='';$('#newDocs').value='';
   $('#datesRows').innerHTML='';(l.dates||[]).forEach(d=>addDateRow(d));
   renderFiles();renderPend();
-  $('#list').hidden=true;$('#editor').hidden=false;
+  $('#list').hidden=true;$('#settings').hidden=true;$('#editor').hidden=false;
 };
 function addDateRow(d){
   const div=document.createElement('div');div.className='drow';
@@ -234,7 +248,7 @@ $('#saveBtn').onclick=async()=>{
     if(LOTS.some((x,idx)=>x.id===l.id&&idx!==editing))throw new Error('Лот с номером '+l.id+' уже существует — номера не должны повторяться');
     if(editing>=0)LOTS[editing]=l;else LOTS.push(l);
     toast('Сохранение lots.json…');
-    await putFile('lots.json',b64e(JSON.stringify({lots:LOTS},null,2)),'обновление лотов '+new Date().toLocaleString('ru-RU'));
+    await saveLots('обновление лотов '+new Date().toLocaleString('ru-RU'));
     toast('Опубликовано! Сайт обновится через ~1 минуту.');
     $('#editor').hidden=true;$('#list').hidden=false;renderList();
   }catch(e){toast('Ошибка: '+e.message);}
@@ -243,12 +257,23 @@ $('#delBtn').onclick=async()=>{
   if(editing<0)return toast('Сначала откройте лот');
   if(!confirm('Удалить лот '+LOTS[editing].id+'?'))return;
   LOTS.splice(editing,1);
-  await putFile('lots.json',b64e(JSON.stringify({lots:LOTS},null,2)),'удаление лота');
+  await saveLots('удаление лота');
   $('#editor').hidden=true;$('#list').hidden=false;renderList();toast('Лот удалён');
 };
 $('#addBtn').onclick=()=>openEditor(-1);
 $('#cancelBtn').onclick=()=>{$('#editor').hidden=true;$('#list').hidden=false;};
 $('#reloadBtn').onclick=load;
+
+$('#textBtn').onclick=()=>{$('#buyoutText').value=SETTINGS.buyout||'';$('#settings').hidden=false;$('#list').hidden=true;$('#editor').hidden=true;};
+$('#closeTextBtn').onclick=()=>{$('#settings').hidden=true;$('#list').hidden=false;};
+$('#saveTextBtn').onclick=async()=>{
+  try{
+    SETTINGS.buyout=$('#buyoutText').value.trim();
+    await saveLots('текст срочного выкупа');
+    toast('Текст сохранён');
+    $('#settings').hidden=true;$('#list').hidden=false;
+  }catch(e){toast('Ошибка: '+e.message);}
+};
 
 if(TOKEN)enter();
 </script>
