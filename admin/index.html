@@ -179,15 +179,15 @@ function renderFiles(){
 }
 function renderPend(){
   $('#pendPhotos').innerHTML=pendPhotos.map((f,i)=>`<div class="fileitem">Новое: ${f.name}<button type="button" onclick="rmPendP(${i})">✕</button></div>`).join('');
-  $('#pendDocs').innerHTML=pendDocs.map((f,i)=>`<div class="fileitem">Новое: ${f.name}<button type="button" onclick="rmPendD(${i})">✕</button></div>`).join('');
+  $('#pendDocs').innerHTML=pendDocs.map((f,i)=>`<div class="fileitem">Файл: ${f.file.name}<input data-pd="${i}" value="${f.name}" placeholder="Название на сайте" style="flex:1;min-width:140px;margin:0"><button type="button" onclick="rmPendD(${i})">✕</button></div>`).join('');
 }
 window.rmPhoto=i=>{curPhotos.splice(i,1);renderFiles();};
 window.rmDoc=i=>{curDocs.splice(i,1);renderFiles();};
 window.rmPendP=i=>{pendPhotos.splice(i,1);renderPend();};
 window.rmPendD=i=>{pendDocs.splice(i,1);renderPend();};
 $('#newPhotos').addEventListener('change',e=>{pendPhotos.push(...e.target.files);e.target.value='';renderPend();});
-$('#newDocs').addEventListener('change',e=>{pendDocs.push(...e.target.files);e.target.value='';renderPend();});
-
+$('#newDocs').addEventListener('change',e=>{for(const f of e.target.files)pendDocs.push({file:f,name:f.name.replace(/\.[^.]+$/,'')});e.target.value='';renderPend();});
+$('#pendDocs').addEventListener('input',e=>{const i=e.target.dataset.pd;if(i!==undefined&&pendDocs[+i])pendDocs[+i].name=e.target.value;});
 function processImage(file){return new Promise(res=>{
   const img=new Image();const url=URL.createObjectURL(file);
   img.onload=()=>{let w=img.width,h=img.height;const max=1600;if(w>max){h=Math.round(h*max/w);w=max;}
