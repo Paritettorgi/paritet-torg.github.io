@@ -175,7 +175,7 @@ function addDateRow(d){
 $('#addDate').onclick=()=>addDateRow();
 function renderFiles(){
   $('#photoList').innerHTML=curPhotos.length?curPhotos.map((p,i)=>`<div class="fileitem">${p}<button type="button" onclick="rmPhoto(${i})">✕</button></div>`).join(''):'<div class="note">Фото пока нет.</div>';
-  $('#docList').innerHTML=curDocs.length?curDocs.map((p,i)=>`<div class="fileitem">${p}<button type="button" onclick="rmDoc(${i})">✕</button></div>`).join(''):'<div class="note">Документов пока нет.</div>';
+  $('#docList').innerHTML=curDocs.length?curDocs.map((p,i)=>`<div class="fileitem">${typeof p==='object'?p.name:p}<button type="button" onclick="rmDoc(${i})">✕</button></div>`).join(''):'<div class="note">Документов пока нет.</div>';
 }
 function renderPend(){
   $('#pendPhotos').innerHTML=pendPhotos.map((f,i)=>`<div class="fileitem">Новое: ${f.name}<button type="button" onclick="rmPendP(${i})">✕</button></div>`).join('');
@@ -204,7 +204,7 @@ function readDoc(file){return new Promise((res,rej)=>{
 $('#saveBtn').onclick=async()=>{
   try{
     for(const f of pendPhotos){toast('Загрузка фото '+f.name+'…');const o=await processImage(f);const ts=Date.now();await putFile('images/'+ts+'-'+o.name,o.b64,'фото '+val('f_id'));curPhotos.push('/images/'+ts+'-'+o.name);}
-    for(const f of pendDocs){toast('Загрузка '+f.name+'…');const o=await readDoc(f);const ts=Date.now();await putFile('docs/'+ts+'-'+o.name,o.b64,'документ '+val('f_id'));curDocs.push('/docs/'+ts+'-'+o.name);}
+        for(const d of pendDocs){toast('Загрузка '+d.file.name+'…');const o=await readDoc(d.file);const ts=Date.now();await putFile('docs/'+ts+'-'+o.name,o.b64,'документ '+val('f_id'));curDocs.push({url:'docs/'+ts+'-'+o.name,name:d.name||o.name});}
     pendPhotos=[];pendDocs=[];
     const dates=[...$('#datesRows').children].map(r=>({label:r.children[0].value.trim(),value:r.children[1].value.trim()})).filter(d=>d.label&&d.value);
     const l={id:val('f_id'),cat:val('f_cat'),kind:val('f_kind'),status:val('f_status'),title:val('f_title'),addr:val('f_addr'),
