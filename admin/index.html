@@ -33,15 +33,15 @@ header h1{font-size:1.2rem;margin-right:auto}
 label{display:block;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
 .drow{display:flex;gap:10px;margin-bottom:8px}
 .drow input{margin-bottom:0}
-.fileitem{font-size:.8rem;border:1px dashed var(--line);padding:6px 10px;margin-bottom:6px;display:flex;gap:10px;align-items:center}
+.fileitem{font-size:.8rem;border:1px dashed var(--line);padding:6px 10px;margin-bottom:6px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .fileitem button{padding:3px 8px;font-size:.7rem}
 .note{font-size:.75rem;color:var(--muted);margin:6px 0 12px}
-#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,80px);background:var(--navy);color:#fff;border:1px solid var(--gold);padding:12px 20px;font-size:.82rem;opacity:0;transition:.4s;z-index:9}
-#toast.show{transform:translate(-50%,0);opacity:1}
-.err{color:#B23A1E;font-size:.8rem;margin-top:8px}
 .section{border:1px solid var(--line);padding:14px;margin-bottom:16px;background:#F7F8FA}
 .section h3{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
 .actions{position:sticky;bottom:0;background:#fff;border-top:2px solid var(--gold);padding:16px;margin:20px -26px -26px;display:flex;gap:10px;flex-wrap:wrap}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,80px);background:var(--navy);color:#fff;border:1px solid var(--gold);padding:12px 20px;font-size:.82rem;opacity:0;transition:.4s;z-index:9}
+#toast.show{transform:translate(-50%,0);opacity:1}
+.err{color:#B23A1E;font-size:.8rem;margin-top:8px}
 @media(max-width:760px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -106,6 +106,7 @@ label{display:block;font-size:.66rem;letter-spacing:.08em;text-transform:upperca
         <label>Новые (будут добавлены при публикации):</label>
         <input id="newDocs" type="file" accept=".pdf" multiple>
         <div id="pendDocs"></div>
+        <div class="note">Для каждого нового файла впишите название — оно будет видно на сайте.</div>
       </div>
     </div>
     <div class="actions">
@@ -175,11 +176,12 @@ function addDateRow(d){
 $('#addDate').onclick=()=>addDateRow();
 function renderFiles(){
   $('#photoList').innerHTML=curPhotos.length?curPhotos.map((p,i)=>`<div class="fileitem">${p}<button type="button" onclick="rmPhoto(${i})">✕</button></div>`).join(''):'<div class="note">Фото пока нет.</div>';
-  $('#docList').innerHTML=curDocs.length?curDocs.map((p,i)=>`<div class="fileitem">${typeof p==='object'?p.name:p}<button type="button" onclick="rmDoc(${i})">✕</button></div>`).join(''):'<div class="note">Документов пока нет.</div>';
+  $('#docList').innerHTML=curDocs.length?curDocs.map((p,i)=>`<div class="fileitem">${typeof p==='object'?(p.name||p.url):p}<button type="button" onclick="rmDoc(${i})">✕</button></div>`).join(''):'<div class="note">Документов пока нет.</div>';
 }
 function renderPend(){
-  $('#pendPhotos').innerHTML=pendPhotos.map((f,i)=>`<div class="fileitem">Новое: ${f.name}<button type="button" onclick="rmPendP(${i})">✕</button></div>`).join('');
-  $('#pendDocs').innerHTML=pendDocs.map((f,i)=>`<div class="fileitem">Файл: ${f.file.name}<input data-pd="${i}" value="${f.name}" placeholder="Название на сайте" style="flex:1;min-width:140px;margin:0"><button type="button" onclick="rmPendD(${i})">✕</button></div>`).join('');
+  $('#pendPhotos').innerHTML=pendPhotos.map((f,i)=>`<div class="fileitem">Новое фото: ${f.name}<button type="button" onclick="rmPendP(${i})">✕</button></div>`).join('');
+  $('#pendDocs').innerHTML=pendDocs.map((f,i)=>{const file=f.file||f;const nm=f.name||file.name.replace(/\.[^.]+$/,'');
+    return `<div class="fileitem">Файл: ${file.name}<input data-pd="${i}" value="${nm}" placeholder="Название на сайте" style="flex:1;min-width:140px;margin:0"><button type="button" onclick="rmPendD(${i})">✕</button></div>`;}).join('');
 }
 window.rmPhoto=i=>{curPhotos.splice(i,1);renderFiles();};
 window.rmDoc=i=>{curDocs.splice(i,1);renderFiles();};
@@ -188,23 +190,25 @@ window.rmPendD=i=>{pendDocs.splice(i,1);renderPend();};
 $('#newPhotos').addEventListener('change',e=>{pendPhotos.push(...e.target.files);e.target.value='';renderPend();});
 $('#newDocs').addEventListener('change',e=>{for(const f of e.target.files)pendDocs.push({file:f,name:f.name.replace(/\.[^.]+$/,'')});e.target.value='';renderPend();});
 $('#pendDocs').addEventListener('input',e=>{const i=e.target.dataset.pd;if(i!==undefined&&pendDocs[+i])pendDocs[+i].name=e.target.value;});
+
 function processImage(file){return new Promise(res=>{
   const img=new Image();const url=URL.createObjectURL(file);
-  img.onload=()=>{let w=img.width,h=img.height;const max=1600;if(w>max){h=Math.round(h*max/w);w=max;}
+  img.onload=()=>{let w=img.width,h=img.height;const max=1280;if(w>max){h=Math.round(h*max/w);w=max;}
     const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);
-    let q=.82,data=c.toDataURL('image/jpeg',q);
-    while(data.length>950*1024&&q>.4){q-=.08;data=c.toDataURL('image/jpeg',q);}
+    let q=.75,data=c.toDataURL('image/jpeg',q);
+    while(data.length>600*1024&&q>.4){q-=.08;data=c.toDataURL('image/jpeg',q);}
     URL.revokeObjectURL(url);
     res({name:file.name.replace(/\.[^.]+$/,'').replace(/[^\w\-]/g,'-')+'.jpg',b64:data.split(',')[1]});};
   img.src=url;});}
 function readDoc(file){return new Promise((res,rej)=>{
+  if(!file||!(file instanceof Blob))return rej(new Error('Не удалось прочитать файл документа'));
   if(file.size>950*1024)return rej(new Error('Файл '+file.name+' больше 1 МБ — сожмите PDF'));
   const r=new FileReader();r.onload=()=>res({name:file.name.replace(/[^\w.\-]/g,'-'),b64:r.result.split(',')[1]});r.readAsDataURL(file);});}
 
 $('#saveBtn').onclick=async()=>{
   try{
-    for(const f of pendPhotos){toast('Загрузка фото '+f.name+'…');const o=await processImage(f);const ts=Date.now();await putFile('images/'+ts+'-'+o.name,o.b64,'фото '+val('f_id'));curPhotos.push('/images/'+ts+'-'+o.name);}
-        for(const d of pendDocs){toast('Загрузка '+d.file.name+'…');const o=await readDoc(d.file);const ts=Date.now();await putFile('docs/'+ts+'-'+o.name,o.b64,'документ '+val('f_id'));curDocs.push({url:'docs/'+ts+'-'+o.name,name:d.name||o.name});}
+    for(const f of pendPhotos){toast('Загрузка фото '+f.name+'…');const o=await processImage(f);const ts=Date.now();await putFile('images/'+ts+'-'+o.name,o.b64,'фото '+val('f_id'));curPhotos.push('images/'+ts+'-'+o.name);}
+    for(const d of pendDocs){const file=d.file||d;toast('Загрузка '+file.name+'…');const o=await readDoc(file);const ts=Date.now();await putFile('docs/'+ts+'-'+o.name,o.b64,'документ '+val('f_id'));curDocs.push({url:'docs/'+ts+'-'+o.name,name:(d.name||file.name.replace(/\.[^.]+$/,''))});}
     pendPhotos=[];pendDocs=[];
     const dates=[...$('#datesRows').children].map(r=>({label:r.children[0].value.trim(),value:r.children[1].value.trim()})).filter(d=>d.label&&d.value);
     const l={id:val('f_id'),cat:val('f_cat'),kind:val('f_kind'),status:val('f_status'),title:val('f_title'),addr:val('f_addr'),
@@ -215,7 +219,7 @@ $('#saveBtn').onclick=async()=>{
     if(!l.id||!l.title)throw new Error('Заполните номер и название лота');
     if(editing>=0)LOTS[editing]=l;else LOTS.push(l);
     toast('Сохранение lots.json…');
-    const r=await putFile('lots.json',b64e(JSON.stringify({lots:LOTS},null,2)),'обновление лотов '+new Date().toLocaleString('ru-RU'));
+    await putFile('lots.json',b64e(JSON.stringify({lots:LOTS},null,2)),'обновление лотов '+new Date().toLocaleString('ru-RU'));
     toast('Опубликовано! Сайт обновится через ~1 минуту.');
     $('#editor').hidden=true;$('#list').hidden=false;renderList();
   }catch(e){toast('Ошибка: '+e.message);}
