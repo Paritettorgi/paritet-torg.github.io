@@ -66,10 +66,9 @@ label{display:block;font-size:.66rem;letter-spacing:.08em;text-transform:upperca
 
   <div id="editor" hidden>
     <div class="grid">
-      <div><label>Номер лота</label><input id="f_id" placeholder="П-2026-006"></div>
+      <div><label>Номер лота (подставляется автоматически)</label><input id="f_id" placeholder="П-2026-006"></div>
       <div><label>Статус</label><select id="f_status"><option value="active">Текущий лот</option><option value="archive">Архив</option></select></div>
-           <div class="full"><label>Информация о доме</label><textarea id="f_house" rows="2"></textarea></div>
-      <div class="full"><label>Земельный участок (площадь, кадастр, категория)</label><textarea id="f_land" rows="2"></textarea></div>
+      <div><label>Категория</label><select id="f_cat"><option>Квартиры</option><option>Дома</option><option>Коммерческая</option><option>Апартаменты</option><option>Земельные участки</option><option>Прямая</option></select></div>
       <div><label>Вид реализации</label><select id="f_kind"><option>Аукцион</option><option>Публичное предложение</option><option>Прямая продажа</option><option>Торги</option></select></div>
       <div class="full"><label>Название лота</label><input id="f_title"></div>
       <div class="full"><label>Адрес</label><input id="f_addr"></div>
@@ -82,7 +81,7 @@ label{display:block;font-size:.66rem;letter-spacing:.08em;text-transform:upperca
       <div><label>Цена за м²</label><input id="f_m2"></div>
       <div><label>Торг (для прямых)</label><input id="f_bargain" placeholder="Возможен / Не возможен"></div>
       <div class="full"><label>Надпись блока (необязательно)</label><input id="f_houseLabel" placeholder="Дом / Участок / Здание — если пусто, подставится само"></div>
-            <div class="full"><label>Информация о доме</label><textarea id="f_house" rows="2"></textarea></div>
+      <div class="full"><label>Информация о доме</label><textarea id="f_house" rows="2"></textarea></div>
       <div class="full"><label>Земельный участок (площадь, кадастр, категория)</label><textarea id="f_land" rows="2"></textarea></div>
       <div class="full"><label>Транспортная доступность</label><textarea id="f_transport" rows="2"></textarea></div>
       <div><label>Название площадки</label><input id="f_plName"></div>
@@ -127,7 +126,7 @@ let TOKEN=localStorage.getItem('pt_token')||'';
 let LOTS=[], editing=-1, curPhotos=[], curDocs=[], pendPhotos=[], pendDocs=[];
 const $=s=>document.querySelector(s);
 const val=id=>$('#'+id).value.trim();
-  function nextId(){
+function nextId(){
   const y=new Date().getFullYear();
   let max=0;
   for(const l of LOTS){const m=(l.id||'').match(/П-(\d{4})-(\d+)/);if(m&&+m[1]===y&&+m[2]>max)max=+m[2];}
@@ -165,10 +164,11 @@ function renderList(){
 window.openEditor=function(i){
   editing=(i===undefined?-1:i);
   const l=editing>=0?LOTS[editing]:{};
-   $('#f_id').value=l.id||nextId();$('#f_status').value=l.status||'active';$('#f_cat').value=l.cat||'Жилая';$('#f_kind').value=l.kind||'Аукцион';
+  $('#f_id').value=l.id||nextId();$('#f_status').value=l.status||'active';$('#f_cat').value=l.cat||'Квартиры';$('#f_kind').value=l.kind||'Аукцион';
   $('#f_title').value=l.title||'';$('#f_addr').value=l.addr||'';$('#f_price').value=l.price||'';$('#f_priceNote').value=l.priceNote||'';
   $('#f_final').value=l.final||'';$('#f_area').value=l.area||'';$('#f_cadastral').value=l.cadastral||'';$('#f_cadCost').value=l.cadCost||'';
-  $('#f_m2').value=l.m2||'';$('#f_bargain').value=l.bargain||'';$('#f_houseLabel').value=l.houseLabel||'';$('#f_house').value=l.house||'';$('#f_land').value=l.land||'';
+  $('#f_m2').value=l.m2||'';$('#f_bargain').value=l.bargain||'';$('#f_houseLabel').value=l.houseLabel||'';$('#f_house').value=l.house||'';
+  $('#f_land').value=l.land||'';$('#f_transport').value=l.transport||'';
   $('#f_plName').value=(l.platform&&l.platform.name)||'';$('#f_plUrl').value=(l.platform&&l.platform.url)||'';$('#f_video').value=l.video||'';
   curPhotos=[...(l.photos||[])];curDocs=[...(l.docs||[])];pendPhotos=[];pendDocs=[];
   $('#newPhotos').value='';$('#newDocs').value='';
@@ -222,11 +222,12 @@ $('#saveBtn').onclick=async()=>{
     const dates=[...$('#datesRows').children].map(r=>({label:r.children[0].value.trim(),value:r.children[1].value.trim()})).filter(d=>d.label&&d.value);
     const l={id:val('f_id'),cat:val('f_cat'),kind:val('f_kind'),status:val('f_status'),title:val('f_title'),addr:val('f_addr'),
       price:val('f_price'),priceNote:val('f_priceNote'),final:val('f_final'),area:val('f_area'),cadastral:val('f_cadastral'),
-      cadCost:val('f_cadCost'),m2:val('f_m2'),bargain:val('f_bargain'),houseLabel:val('f_houseLabel'),house:val('f_house'),land:val('f_land'),transport:val('f_transport'),
+      cadCost:val('f_cadCost'),m2:val('f_m2'),bargain:val('f_bargain'),houseLabel:val('f_houseLabel'),house:val('f_house'),
+      land:val('f_land'),transport:val('f_transport'),video:val('f_video'),
       platform:(val('f_plName')||val('f_plUrl'))?{name:val('f_plName'),url:val('f_plUrl')}:null,
       dates,photos:curPhotos,docs:curDocs};
-        if(!l.id||!l.title)throw new Error('Заполните номер и название лота');
-    if(LOTS.some((x,i)=>x.id===l.id&&i!==editing))throw new Error('Лот с номером '+l.id+' уже существует — номера не должны повторяться');
+    if(!l.id||!l.title)throw new Error('Заполните номер и название лота');
+    if(LOTS.some((x,idx)=>x.id===l.id&&idx!==editing))throw new Error('Лот с номером '+l.id+' уже существует — номера не должны повторяться');
     if(editing>=0)LOTS[editing]=l;else LOTS.push(l);
     toast('Сохранение lots.json…');
     await putFile('lots.json',b64e(JSON.stringify({lots:LOTS},null,2)),'обновление лотов '+new Date().toLocaleString('ru-RU'));
