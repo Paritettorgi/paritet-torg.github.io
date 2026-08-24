@@ -15,11 +15,11 @@
   header{border-bottom:1px solid var(--line)}
   .top{display:flex;align-items:center;gap:16px;padding:14px 0;flex-wrap:wrap}
   .logo img{height:88px;width:auto;display:block}
-  nav{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap}
-  nav a{color:var(--navy);text-decoration:none;font-size:.85rem;font-weight:500;padding:8px 12px;border:1px solid transparent;transition:.2s;cursor:pointer}
+  nav{margin-left:20px;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+  nav a{display:inline-flex;align-items:center;line-height:1.2;color:var(--navy);text-decoration:none;font-size:.85rem;font-weight:500;padding:8px 12px;border:1px solid transparent;transition:.2s;cursor:pointer}
   nav a:hover{border-color:var(--gold);color:var(--gold)}
   nav a.on{border-color:var(--gold);color:var(--gold)}
-  nav .drop{position:relative;display:inline-block}
+  nav .drop{position:relative;display:flex;align-items:center}
   nav .sub{display:none;position:absolute;top:100%;left:0;background:var(--white);border:1px solid var(--line);border-top:2px solid var(--gold);min-width:230px;z-index:60;box-shadow:0 14px 30px rgba(44,62,80,.15)}
   nav .sub a{display:block;padding:10px 16px;border:0}
   nav .drop:hover .sub,nav .drop.open .sub{display:block}
@@ -100,7 +100,6 @@
   .toast.show{transform:translate(-50%,0);opacity:1}
   @media(max-width:860px){
     .m-grid{grid-template-columns:1fr}.top{flex-wrap:wrap}nav{margin-left:0}
-    nav .drop{display:block}
     nav .sub{position:static;box-shadow:none;border:0;border-left:2px solid var(--gold)}
   }
 </style>
