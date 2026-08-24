@@ -68,8 +68,8 @@ label{display:block;font-size:.66rem;letter-spacing:.08em;text-transform:upperca
     <div class="grid">
       <div><label>Номер лота (подставляется автоматически)</label><input id="f_id" placeholder="П-2026-006"></div>
       <div><label>Статус</label><select id="f_status"><option value="active">Текущий лот</option><option value="archive">Архив</option></select></div>
-      <div><label>Категория</label><select id="f_cat"><option>Квартиры</option><option>Дома</option><option>Коммерческая</option><option>Апартаменты</option><option>Земельные участки</option><option>Прямая</option></select></div>
-      <div><label>Вид реализации</label><select id="f_kind"><option>Аукцион</option><option>Публичное предложение</option><option>Прямая продажа</option><option>Торги</option></select></div>
+      <div><label>Категория</label><select id="f_cat"><option>Квартиры</option><option>Дома</option><option>Коммерческая</option><option>Апартаменты</option><option>Земельные участки</option><option>Машиноместо</option></select></div>
+      <div><label>Вид реализации</label><select id="f_kind"><option>Аукцион</option><option>Публичное предложение</option><option>Торги</option><option>Прямая продажа</option><option>Аренда</option></select></div>
       <div class="full"><label>Название лота</label><input id="f_title"></div>
       <div class="full"><label>Адрес</label><input id="f_addr"></div>
       <div><label>Цена (начальная / продажи)</label><input id="f_price"></div>
@@ -164,7 +164,11 @@ function renderList(){
 window.openEditor=function(i){
   editing=(i===undefined?-1:i);
   const l=editing>=0?LOTS[editing]:{};
-  $('#f_id').value=l.id||nextId();$('#f_status').value=l.status||'active';$('#f_cat').value=l.cat||'Квартиры';$('#f_kind').value=l.kind||'Аукцион';
+    $('#f_id').value=l.id||nextId();$('#f_status').value=l.status||'active';
+  const cs=$('#f_cat');if(l.cat&&![...cs.options].some(o=>o.value===l.cat))cs.add(new Option(l.cat,l.cat));
+  cs.value=l.cat||'Квартиры';
+  const ks=$('#f_kind');if(l.kind&&![...ks.options].some(o=>o.value===l.kind))ks.add(new Option(l.kind,l.kind));
+  ks.value=l.kind||'Аукцион';
   $('#f_title').value=l.title||'';$('#f_addr').value=l.addr||'';$('#f_price').value=l.price||'';$('#f_priceNote').value=l.priceNote||'';
   $('#f_final').value=l.final||'';$('#f_area').value=l.area||'';$('#f_cadastral').value=l.cadastral||'';$('#f_cadCost').value=l.cadCost||'';
   $('#f_m2').value=l.m2||'';$('#f_bargain').value=l.bargain||'';$('#f_houseLabel').value=l.houseLabel||'';$('#f_house').value=l.house||'';
