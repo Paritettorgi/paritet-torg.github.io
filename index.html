@@ -60,6 +60,9 @@
   .c-tile a{color:var(--navy);font-weight:700;font-size:1.02rem;text-decoration:none}
   .c-tile a:hover{color:var(--gold)}
   .c-note{margin-top:26px;color:var(--muted);font-size:.82rem}
+  .buyout-box{border:1px solid var(--line);border-left:4px solid var(--gold);padding:28px 32px;max-width:860px;background:var(--white)}
+  .buyout-box p{font-size:.95rem;line-height:1.75;margin-bottom:12px}
+  .buyout-box p:last-child{margin-bottom:0}
   footer{background:var(--navy);color:#C9D4DE;padding:40px 0 26px}
   .foot{display:grid;grid-template-columns:1.4fr 1fr;gap:36px;margin-bottom:26px}
   footer h4{color:var(--gold);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px}
@@ -188,12 +191,13 @@ function docLink(d){
   return {url:'#',name:(typeof d==='string')?d:'Документ'};
 }
 
-let LOTS=[];
+let LOTS=[];let SETTINGS={};
 async function initSite(){
   try{
     const res=await fetch('lots.json?upd='+Date.now());
     const data=await res.json();
-    LOTS=(data.lots||data||[]).map(l=>{if(l.cat==='Жилая')l.cat='Квартиры';return l;});
+        SETTINGS=data||{};
+    LOTS=(data.lots||[]).map(l=>{if(l.cat==='Жилая')l.cat='Квартиры';return l;});
     LOTS.sort((a,b)=>(b.id||'').localeCompare(a.id||'',undefined,{numeric:true}));
     renderPage('home');
     const fromHash=lotFromHash();if(fromHash)openLot(fromHash);
@@ -245,6 +249,8 @@ for(const m of MODES){
       +(m.sub?'<span class="sub">'+CATS.map(c=>'<a data-page="'+(m.key+'-'+CK[c])+'">'+c+'</a>').join('')+'</span>':'')
       +'</span>';
   }
+  PAGES.buyout={t:'Срочный выкуп',s:'выкупим ваш объект быстро и безопасно',i:'buyout',info:true};
+const DEFAULT_BUYOUT='Компания «ТОРГИ.ПЛЮС» предлагает срочный выкуп объектов недвижимости с дисконтом.\n\nЧто мы выкупаем: квартиры, дома, коммерческую недвижимость, апартаменты, земельные участки и машиноместа.\n\nКак это работает: вы присылаете информацию об объекте — в течение 24 часов мы готовим предложение с ценой выкупа — выходим на сделку в удобный для вас срок.\n\nРаботаем в том числе со сложными объектами: ипотека, обременения, долевая собственность, наследство.\n\nСвяжитесь с нами любым удобным способом из раздела «Контакты».';
   h+='<a data-page="archive">Архив</a><a data-page="contacts">Контакты</a>';
   document.getElementById('nav').innerHTML=h;
 })();
@@ -276,6 +282,13 @@ function cardHTML(l){
 function renderPage(key){
   document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.dataset.page===key));
   const p=PAGES[key];
+    if(key==='buyout'){
+    const txt=(SETTINGS&&SETTINGS.buyout)||DEFAULT_BUYOUT;
+    main.innerHTML=`
+      <div class="page-head"><div class="page-ico">${ICO.buyout}</div><div><h1>${p.t}</h1><span>${p.s}</span></div></div>
+      <div class="buyout-box">${txt.split(/\n+/).map(x=>`<p>${x}</p>`).join('')}</div>`;
+    return;
+  }
   if(key==='contacts'){
     main.innerHTML=`
       <div class="page-head"><div class="page-ico">${ICO.contacts}</div><div><h1>${p.t}</h1></div></div>
