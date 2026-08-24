@@ -103,7 +103,8 @@
     <a class="logo" href="#" data-page="home"><img src="logo.png" alt="ТОРГИ.ПЛЮС — на шаг впереди"></a>
     <nav id="nav">
       <a data-page="home" class="on">Главная</a>
-      <a data-page="zhil">Жилая недвижимость</a>
+      <a data-page="kvart">Квартиры</a>
+      <a data-page="dom">Дома</a>
       <a data-page="komm">Коммерческая</a>
       <a data-page="apart">Апартаменты</a>
       <a data-page="zemlya">Земельные участки</a>
@@ -149,6 +150,7 @@
         <div class="m-price" id="mPrice"></div>
         <div class="m-sec">Ключевые параметры</div>
         <div class="p-grid" id="mParams"></div>
+        <div id="mLand"></div>
         <div class="m-sec">Сроки и цены</div>
         <div class="p-grid" id="mDates"></div>
         <div class="m-sec">Документы</div>
@@ -206,7 +208,8 @@ async function initSite(){
 
 const ICO={
  home:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A574" stroke-width="1.5"><path d="M3 11l9-8 9 8M5 10v11h14V10M10 21v-6h4v6"/></svg>',
- zhil:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A574" stroke-width="1.5"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6M9 11h.01M15 11h.01"/></svg>',
+ kvart:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A574" stroke-width="1.5"><path d="M3 21h18M6 21V4h8v17M14 9h4v12M9 8h.01M9 12h.01M9 16h.01M17 13h.01M17 17h.01"/></svg>',
+ dom:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A574" stroke-width="1.5"><path d="M3 12l9-9 9 9M5 10v11h14V10M9 21v-6h6v6"/></svg>',
  komm:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A574" stroke-width="1.5"><path d="M3 21h18M4 21V5h8v16M14 21V9h6v12M7 9h.01M7 13h.01M17 13h.01M17 17h.01"/></svg>',
  apart:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A574" stroke-width="1.5"><path d="M3 21h18M6 21V4h8v17M14 9h4v12M9 8h.01M9 12h.01M9 16h.01M17 13h.01M17 17h.01"/></svg>',
  zemlya:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A574" stroke-width="1.5"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/></svg>',
@@ -216,7 +219,8 @@ const ICO={
 };
 const PAGES={
  home:{t:'Текущие лоты',s:'в порядке публикации',i:'home',f:l=>l.status!=='archive'},
- zhil:{t:'Торги — жилая недвижимость',s:'квартиры и дома на электронных площадках',i:'zhil',f:l=>l.status!=='archive'&&l.cat==='Жилая'},
+ kvart:{t:'Торги — квартиры',s:'квартиры на электронных площадках',i:'kvart',f:l=>l.status!=='archive'&&(l.cat==='Квартиры'||l.cat==='Жилая')},
+ dom:{t:'Торги — дома',s:'дома и коттеджи с земельными участками',i:'dom',f:l=>l.status!=='archive'&&l.cat==='Дома'},
  komm:{t:'Торги — коммерческая недвижимость',s:'офисы, склады, торговые помещения',i:'komm',f:l=>l.status!=='archive'&&l.cat==='Коммерческая'},
  apart:{t:'Торги — апартаменты',s:'апартаменты и студии',i:'apart',f:l=>l.status!=='archive'&&l.cat==='Апартаменты'},
  zemlya:{t:'Торги — земельные участки',s:'земля и участки на электронных площадках',i:'zemlya',f:l=>l.status!=='archive'&&l.cat==='Земельные участки'},
@@ -292,6 +296,7 @@ function openLot(id){try{
     ['Кадастровая стоимость',l.cadCost],['Цена за м²',l.m2],
     [l.houseLabel||(l.cat==='Земельные участки'?'Участок':'Дом'),l.house,1],['Транспорт',l.transport,1]
   ].filter(p=>p[1]).map(p=>`<div class="${p[2]?'wide':''}"><small>${p[0]}</small>${p[1]}</div>`).join('');
+  document.getElementById('mLand').innerHTML=l.land?`<div class="m-sec">Земельный участок</div><div class="p-grid"><div class="wide">${l.land}</div></div>`:'';
   document.getElementById('mDates').innerHTML=(l.dates||[]).map(d=>{const a=dv(d);return `<div><small>${a[0]}</small>${a[1]}</div>`;}).join('');
   const docs=(l.docs||[]).map(docLink);
   document.getElementById('mDocs').innerHTML=docs.length?docs.map(o=>`
