@@ -106,6 +106,7 @@
       <a data-page="zhil">Жилая недвижимость</a>
       <a data-page="komm">Коммерческая</a>
       <a data-page="apart">Апартаменты</a>
+      <a data-page="zemlya">Земельные участки</a>
       <a data-page="direct">Прямые продажи</a>
       <a data-page="archive">Архив</a>
       <a data-page="contacts">Контакты</a>
@@ -208,6 +209,7 @@ const ICO={
  zhil:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A574" stroke-width="1.5"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6M9 11h.01M15 11h.01"/></svg>',
  komm:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A574" stroke-width="1.5"><path d="M3 21h18M4 21V5h8v16M14 21V9h6v12M7 9h.01M7 13h.01M17 13h.01M17 17h.01"/></svg>',
  apart:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A574" stroke-width="1.5"><path d="M3 21h18M6 21V4h8v17M14 9h4v12M9 8h.01M9 12h.01M9 16h.01M17 13h.01M17 17h.01"/></svg>',
+ zemlya:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A574" stroke-width="1.5"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/></svg>',
  direct:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A574" stroke-width="1.5"><path d="M20.6 13.4L12 22 2 12V2h10l8.6 8.6a2 2 0 010 2.8z"/><circle cx="7" cy="7" r="1.6"/></svg>',
  archive:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A574" stroke-width="1.5"><path d="M3 7h18v14H3zM3 7l2-4h14l2 4M10 11h4"/></svg>',
  contacts:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D4A574" stroke-width="1.5"><path d="M22 17v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .4 2 .7 2.9a2 2 0 01-.5 2.1L8 10a16 16 0 006 6l1.3-1.3a2 2 0 012.1-.5c.9.3 1.9.6 2.9.7a2 2 0 011.7 2z"/></svg>'
@@ -217,6 +219,7 @@ const PAGES={
  zhil:{t:'Торги — жилая недвижимость',s:'квартиры и дома на электронных площадках',i:'zhil',f:l=>l.status!=='archive'&&l.cat==='Жилая'},
  komm:{t:'Торги — коммерческая недвижимость',s:'офисы, склады, торговые помещения',i:'komm',f:l=>l.status!=='archive'&&l.cat==='Коммерческая'},
  apart:{t:'Торги — апартаменты',s:'апартаменты и студии',i:'apart',f:l=>l.status!=='archive'&&l.cat==='Апартаменты'},
+ zemlya:{t:'Торги — земельные участки',s:'земля и участки на электронных площадках',i:'zemlya',f:l=>l.status!=='archive'&&l.cat==='Земельные участки'},
  direct:{t:'Прямые продажи',s:'объекты от заказчиков, без торгов',i:'direct',f:l=>l.status!=='archive'&&l.cat==='Прямая'},
  archive:{t:'Архив',s:'торги завершены',i:'archive',f:l=>l.status==='archive'},
  contacts:{t:'Контакты',s:'',i:'contacts'}
