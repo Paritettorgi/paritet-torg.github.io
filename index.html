@@ -158,7 +158,7 @@
         <div class="docs" id="mDocs"></div>
         <div class="m-actions">
           <button class="btn" id="mCopy">Скопировать ссылку</button>
-          <a class="btn ghost" id="mPlatform" href="#" target="_blank">Открыть площадку</a>
+          <a class="btn ghost" id="mPlatform" href="#" target="_blank" rel="noopener noreferrer">Открыть площадку</a>
         </div>
         <div class="src" id="mSrc"></div>
       </div>
@@ -339,7 +339,7 @@ function openLot(id){try{
     :'<div class="src">Документы не добавлены</div>';
   const plEl=document.getElementById('mPlatform');
   if(plat){plEl.style.display='';plEl.href=plat.url||'#';plEl.textContent=arch?'Страница лота на площадке':'Открыть площадку: '+plat.name;
-    document.getElementById('mSrc').innerHTML=plat.url?`Источник: <a href="${plat.url}" target="_blank" rel="noopener">${plat.name}</a>`:'Источник: '+plat.name;}
+    document.getElementById('mSrc').innerHTML=plat.url?`Источник: <a href="${plat.url}" target="_blank" rel="noopener noreferrer">${plat.name}</a>`:'Источник: '+plat.name;}
   else{plEl.style.display='none';document.getElementById('mSrc').textContent=l.kind==='Аренда'?'Аренда от заказчика.':'Прямая продажа от заказчика.';}
   const photos=(l.photos&&l.photos.length)?l.photos:[''];
   const gm=document.getElementById('gMain'),gt=document.getElementById('gThumbs');
