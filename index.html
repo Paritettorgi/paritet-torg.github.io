@@ -43,7 +43,8 @@
   .addr{color:var(--muted);font-size:.83rem;margin-bottom:14px}
   .rows{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;margin-bottom:16px}
   .rows div{font-size:.82rem}
-  .rows small{display:block;color:var(--muted);font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;margin-bottom:1px}
+  .rows small{display:block;color:var(--muted);font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rows div{overflow:hidden}
   .price{font-size:1.22rem;font-weight:800;margin-bottom:16px}
   .price small{color:var(--muted);font-weight:500;font-size:.72rem;display:block}
   .price.fin{color:var(--gold)}
@@ -257,9 +258,12 @@ const DEFAULT_BUYOUT='Компания «ТОРГИ.ПЛЮС» предлага�
 
 const main=document.getElementById('main');
 function cardHTML(l){
-  const arch=l.status==='archive';
-  const rows=(l.dates||[]).map(dv);
-  const dd=n=>{const f=rows.find(x=>x[0]===n);return f?f[1]:'—';};
+    const arch=l.status==='archive';
+  const rows=(l.dates||[]).map(dv).filter(r=>r[0]&&r[1]);
+  let c2=rows[0]||null,c4=rows[1]||null;
+  if(!c2&&l.bargain)c2=['Торг',l.bargain];
+  if(!c2)c2=['Дата торгов','—'];
+  if(!c4)c4=['Задаток','—'];
   const plat=l.platform&&l.platform.name?l.platform:null;
   return `<article class="card">
     <div class="photo">
@@ -270,9 +274,9 @@ function cardHTML(l){
       <h3>${l.title}</h3><div class="addr">${l.addr}</div>
       <div class="rows">
         <div><small>Вид реализации</small>${l.kind||'—'}</div>
-        <div><small>${arch?'Дата торгов':(plat?'Дата торгов':'Торг')}</small>${arch?dd('Дата торгов'):(plat?dd('Дата торгов'):(l.bargain||'—'))}</div>
+        <div><small>${c2[0]}</small>${c2[1]}</div>
         <div><small>Площадь</small>${l.area||'—'}</div>
-        <div><small>${arch?'Начальная цена':'Задаток'}</small>${arch?(l.price||'—'):dd('Задаток')}</div>
+        <div><small>${c4[0]}</small>${c4[1]}</div>
       </div>
       <div class="price ${arch?'fin':''}">${arch?(l.final||l.price):(l.price||'—')}<small>${arch?('итоговая цена сделки · начальная '+(l.price||'')):(l.priceNote||'')}</small></div>
       <button class="btn" data-id="${l.id}">Подробнее</button>
