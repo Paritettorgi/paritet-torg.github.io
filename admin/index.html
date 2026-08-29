@@ -207,7 +207,8 @@ window.openEditor=function(i){
   $('#newPhotos').value='';$('#newDocs').value='';
   $('#datesRows').innerHTML='';(l.dates||[]).forEach(d=>addDateRow(d));
   renderFiles();renderPend();
-  $('#list').hidden=true;$('#settings').hidden=true;$('#contactsBox').hidden=true;$('#editor').hidden=false;
+   $('#list').hidden=true;$('#settings').hidden=true;$('#contactsBox').hidden=true;$('#editor').hidden=false;
+};
 function addDateRow(d){
   const div=document.createElement('div');div.className='drow';
   div.innerHTML=`<input placeholder="Подпись (Дата торгов / Задаток…)" value="${(d&&d.label)||''}"><input placeholder="Значение" value="${(d&&d.value)||''}"><button class="sec" type="button">✕</button>`;
