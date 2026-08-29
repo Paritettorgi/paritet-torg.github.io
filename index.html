@@ -295,6 +295,13 @@ function cardHTML(l){
 function renderPage(key){
   document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.dataset.page===key));
   const p=PAGES[key];
+    if(key==='buyout'){
+    const txt=(SETTINGS&&SETTINGS.buyout)||DEFAULT_BUYOUT;
+    main.innerHTML=`
+      <div class="page-head"><div class="page-ico">${ICO.buyout}</div><div><h1>${p.t}</h1><span>${p.s}</span></div></div>
+      <div class="buyout-box">${txt.split(/\n+/).map(x=>`<p>${x}</p>`).join('')}</div>`;
+    return;
+  }
     if(key==='contacts'){
     const c=getContacts();
     const tiles=[
