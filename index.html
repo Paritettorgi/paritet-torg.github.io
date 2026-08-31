@@ -92,7 +92,7 @@
   .m-sec{font-size:.7rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin:20px 0 10px;border-bottom:1px solid var(--line);padding-bottom:6px}
   .p-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px}
   .p-grid div{font-size:.85rem}
-  .p-grid div.wide{grid-column:1/-1}
+  .p-grid div.wide{grid-column:1/-1;white-space:pre-line}
   .p-grid small{display:block;color:var(--muted);font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1px}
   .docs a{display:flex;align-items:center;gap:10px;padding:9px 2px;border-bottom:1px dashed var(--line);color:var(--navy);text-decoration:none;font-size:.87rem;font-weight:500;transition:.2s}
   .docs a:hover{color:var(--gold)}
@@ -152,6 +152,7 @@
         <div class="m-sec">Ключевые параметры</div>
         <div class="p-grid" id="mParams"></div>
         <div id="mLand"></div>
+        <div id="mAnalytics"></div>
         <div class="m-sec">Сроки и цены</div>
         <div class="p-grid" id="mDates"></div>
         <div class="m-sec">Документы</div>
@@ -358,6 +359,7 @@ function openLot(id){try{
     [l.houseLabel||(l.cat==='Земельные участки'?'Участок':'Дом'),l.house,1],['Транспорт',l.transport,1]
   ].filter(p=>p[1]).map(p=>`<div class="${p[2]?'wide':''}"><small>${p[0]}</small>${p[1]}</div>`).join('');
   document.getElementById('mLand').innerHTML=l.land?`<div class="m-sec">Земельный участок</div><div class="p-grid"><div class="wide">${l.land}</div></div>`:'';
+    document.getElementById('mAnalytics').innerHTML=l.analytics?`<div class="m-sec">${l.analyticsLabel||'Аналитика'}</div><div class="p-grid"><div class="wide">${l.analytics}</div></div>`:'';
   document.getElementById('mDates').innerHTML=(l.dates||[]).map(d=>{const a=dv(d);return `<div><small>${a[0]}</small>${a[1]}</div>`;}).join('');
   const docs=(l.docs||[]).map(docLink);
   document.getElementById('mDocs').innerHTML=docs.length?docs.map(o=>`
