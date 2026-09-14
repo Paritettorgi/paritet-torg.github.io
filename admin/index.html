@@ -77,6 +77,8 @@ label{display:block;font-size:.66rem;letter-spacing:.08em;text-transform:upperca
       <div><label>Цена (начальная / продажи)</label><input id="f_price"></div>
       <div><label>Подпись цены</label><input id="f_priceNote" placeholder="начальная цена / цена продажи"></div>
       <div><label>Итоговая цена (для архива)</label><input id="f_final"></div>
+      <div><label>Результат торгов</label><select id="f_resultType"><option value="sold">Продан</option><option value="failed">Торги не состоялись</option></select></div>
+      <div><label>Итоговая сумма (если продан)</label><input id="f_result" placeholder="450 000 000 ₽"></div>
       <div><label>Площадь</label><input id="f_area"></div>
       <div><label>Кадастровый номер</label><input id="f_cadastral"></div>
       <div><label>Кадастровая стоимость</label><input id="f_cadCost"></div>
@@ -188,6 +190,7 @@ function renderList(){
     <span class="id">${l.id}</span><b>${l.title}</b>
     <span class="st ${l.status==='archive'?'arch':''}">${l.status==='archive'?'Архив':'Текущий'}</span>
     <span style="margin-left:auto"></span>
+    ${l.status!=='archive'?`<button class="sec" onclick="archiveLot(${i})">В архив</button>`:''}
     <button onclick="openEditor(${i})">Изменить</button>
   </div>`).join('')||'<p style="color:var(--muted)">Лотов пока нет.</p>';
 }
@@ -201,7 +204,7 @@ window.openEditor=function(i){
   const ks=$('#f_kind');if(l.kind&&![...ks.options].some(o=>o.value===l.kind))ks.add(new Option(l.kind,l.kind));
   ks.value=l.kind||'Аукцион';
   $('#f_title').value=l.title||'';$('#f_addr').value=l.addr||'';$('#f_price').value=l.price||'';$('#f_priceNote').value=l.priceNote||'';
-  $('#f_final').value=l.final||'';$('#f_area').value=l.area||'';$('#f_cadastral').value=l.cadastral||'';$('#f_cadCost').value=l.cadCost||'';
+  $('#f_final').value=l.final||'';$('#f_resultType').value=l.resultType||'sold';$('#f_result').value=l.result||'';$('#f_area').value=l.area||'';$('#f_cadastral').value=l.cadastral||'';$('#f_cadCost').value=l.cadCost||'';
   $('#f_m2').value=l.m2||'';$('#f_bargain').value=l.bargain||'';$('#f_houseLabel').value=l.houseLabel||'';$('#f_house').value=l.house||'';
   $('#f_land').value=l.land||'';$('#f_analyticsLabel').value=l.analyticsLabel||'';$('#f_analytics').value=l.analytics||'';$('#f_transport').value=l.transport||'';
   $('#f_plName').value=(l.platform&&l.platform.name)||'';$('#f_plUrl').value=(l.platform&&l.platform.url)||'';$('#f_video').value=l.video||'';
@@ -256,7 +259,7 @@ $('#saveBtn').onclick=async()=>{
     pendPhotos=[];pendDocs=[];
     const dates=[...$('#datesRows').children].map(r=>({label:r.children[0].value.trim(),value:r.children[1].value.trim()})).filter(d=>d.label&&d.value);
     const l={id:val('f_id'),cat:val('f_cat'),kind:val('f_kind'),status:val('f_status'),title:val('f_title'),addr:val('f_addr'),
-      price:val('f_price'),priceNote:val('f_priceNote'),final:val('f_final'),area:val('f_area'),cadastral:val('f_cadastral'),
+      price:val('f_price'),priceNote:val('f_priceNote'),final:val('f_final'),resultType:val('f_resultType'),result:val('f_result'),area:val('f_area'),cadastral:val('f_cadastral'),
       cadCost:val('f_cadCost'),m2:val('f_m2'),bargain:val('f_bargain'),houseLabel:val('f_houseLabel'),house:val('f_house'),
       land:val('f_land'),analyticsLabel:val('f_analyticsLabel'),analytics:val('f_analytics'),transport:val('f_transport'),video:val('f_video'),
       platform:(val('f_plName')||val('f_plUrl'))?{name:val('f_plName'),url:val('f_plUrl')}:null,
@@ -312,6 +315,25 @@ $('#saveContactsBtn').onclick=async()=>{
     await saveLots('обновление контактов');
     toast('Контакты сохранены');
     $('#contactsBox').hidden=true;$('#list').hidden=false;
+  }catch(e){toast('Ошибка: '+e.message);}
+};
+  window.archiveLot=async function(i){
+  const l=LOTS[i];
+  const type=prompt('Результат:\n1 — Продан\n2 — Торги не состоялись\n\nВведите 1 или 2:');
+  if(!type)return;
+  let result='';
+  if(type==='1'){
+    result=prompt('Итоговая сумма продажи:');
+    if(!result)return;
+    l.resultType='sold';l.result=result;
+  }else if(type==='2'){
+    l.resultType='failed';l.result='Торги не состоялись';
+  }else return;
+  l.status='archive';
+  try{
+    await saveLots('лот в архив');
+    toast('Лот перемещён в архив');
+    renderList();
   }catch(e){toast('Ошибка: '+e.message);}
 };
 if(TOKEN)enter();
