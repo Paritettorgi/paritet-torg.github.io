@@ -266,6 +266,7 @@ $('#saveBtn').onclick=async()=>{
       dates,photos:curPhotos,docs:curDocs};
     if(!l.id||!l.title)throw new Error('Заполните номер и название лота');
     if(LOTS.some((x,idx)=>x.id===l.id&&idx!==editing))throw new Error('Лот с номером '+l.id+' уже существует — номера не должны повторяться');
+    if(l.status==='archive'&&!l.archiveDate)l.archiveDate=Date.now();
     if(editing>=0)LOTS[editing]=l;else LOTS.push(l);
     toast('Сохранение lots.json…');
     await saveLots('обновление лотов '+new Date().toLocaleString('ru-RU'));
@@ -329,7 +330,7 @@ $('#saveContactsBtn').onclick=async()=>{
   }else if(type==='2'){
     l.resultType='failed';l.result='Торги не состоялись';
   }else return;
-  l.status='archive';
+    l.status='archive';l.archiveDate=Date.now();
   try{
     await saveLots('лот в архив');
     toast('Лот перемещён в архив');
