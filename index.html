@@ -38,6 +38,9 @@
   .num{position:absolute;top:10px;right:12px;background:rgba(44,62,80,.85);color:var(--gold);font-size:.72rem;font-weight:600;letter-spacing:.08em;padding:4px 9px}
   .cat{position:absolute;top:10px;left:12px;background:rgba(255,255,255,.92);border:1px solid var(--gold);color:var(--navy);font-size:.66rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:5px 9px}
   .cat.arch{background:var(--navy);border-color:var(--navy);color:var(--gold)}
+  .result{margin-top:12px;padding:10px 14px;border:1px solid var(--gold);font-weight:600;font-size:.88rem;text-align:center}
+  .result.sold{background:var(--gold);color:var(--navy)}
+  .result.failed{background:var(--navy);color:var(--gold);border-color:var(--navy)}
   .body{padding:18px 18px 20px;display:flex;flex-direction:column;flex:1}
   .body h3{font-size:1.02rem;font-weight:700;line-height:1.35;margin-bottom:6px}
   .addr{color:var(--muted);font-size:.83rem;margin-bottom:14px}
@@ -289,6 +292,7 @@ function cardHTML(l){
         <div><small>${c4[0]}</small>${c4[1]}</div>
       </div>
       <div class="price ${arch?'fin':''}">${arch?(l.final||l.price):(l.price||'—')}<small>${arch?('итоговая цена сделки · начальная '+(l.price||'')):(l.priceNote||'')}</small></div>
+      ${arch&&l.result?`<div class="result ${l.resultType||'sold'}">${l.resultType==='failed'?'Торги не состоялись':'Продан за '+l.result}</div>`:''}
       <button class="btn" data-id="${l.id}">Подробнее</button>
     </div>
   </article>`;
