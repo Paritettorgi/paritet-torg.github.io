@@ -182,6 +182,7 @@ async function load(){
     const d=JSON.parse(b64d(r.content));
     SETTINGS=(d&&typeof d==='object')?d:{};
     LOTS=SETTINGS.lots||[];
+    LOTS.forEach(l=>{if(l.status==='archive'&&!l.archiveDate)l.archiveDate=Date.now();});
     renderList();
   }catch(e){toast('Ошибка загрузки: '+e.message);}
 }
