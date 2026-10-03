@@ -37,6 +37,7 @@
   .photo{height:190px;position:relative;overflow:hidden}
   .photo img{width:100%;height:100%;object-fit:cover}
   .num{position:absolute;top:10px;right:12px;background:rgba(44,62,80,.85);color:var(--gold);font-size:.72rem;font-weight:600;letter-spacing:.08em;padding:4px 9px}
+  .reserved{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-12deg);background:rgba(44,62,80,.85);color:var(--gold);border:2px solid var(--gold);padding:8px 22px;font-size:.8rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;white-space:nowrap}
   .cat{position:absolute;top:10px;left:12px;background:rgba(255,255,255,.92);border:1px solid var(--gold);color:var(--navy);font-size:.66rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:5px 9px}
   .cat.arch{background:var(--navy);border-color:var(--navy);color:var(--gold)}
   .result{margin-top:12px;padding:10px 14px;border:1px solid var(--gold);font-weight:600;font-size:.88rem;text-align:center}
@@ -285,6 +286,7 @@ function cardHTML(l){
     <div class="photo">
       <img src="${ph((l.photos||[])[0],640,400,l.title)}" alt="" loading="lazy">
       <span class="cat ${arch?'arch':''}">${arch?'Архив':l.cat}</span><span class="num">№ ${l.id}</span>
+      ${l.reserved?'<span class="reserved">Забронировано</span>':''}
     </div>
     <div class="body">
       <h3>${l.title}</h3><div class="addr">${l.addr}</div>
@@ -354,7 +356,7 @@ function openLot(id){try{
   const arch=l.status==='archive';
   const plat=l.platform&&l.platform.name?l.platform:null;
   document.getElementById('mTags').innerHTML=
-    `<span class="no">№ ${l.id}</span>${arch?'<span class="no">Архив</span>':''}<span>${l.cat}</span><span>${l.kind||''}</span>`;
+  `<span class="no">№ ${l.id}</span>${arch?'<span class="no">Архив</span>':''}${l.reserved?'<span class="no">Забронировано</span>':''}<span>${l.cat}</span><span>${l.kind||''}</span>`;
   document.getElementById('mTitle').textContent=l.title;
   document.getElementById('mAddr').textContent=l.addr;
   document.getElementById('mPrice').innerHTML=arch
