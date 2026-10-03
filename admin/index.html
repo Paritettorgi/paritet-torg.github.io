@@ -71,6 +71,7 @@ label{display:block;font-size:.66rem;letter-spacing:.08em;text-transform:upperca
     <div class="grid">
       <div><label>Номер лота (подставляется автоматически)</label><input id="f_id" placeholder="П-2026-006"></div>
       <div><label>Статус</label><select id="f_status"><option value="active">Текущий лот</option><option value="archive">Архив</option></select></div>
+      <div><label>Бронь</label><select id="f_reserved"><option value="">Не забронирован</option><option value="1">Забронирован</option></select></div>
       <div><label>Категория</label><select id="f_cat"><option>Квартиры</option><option>Дома</option><option>Коммерческая</option><option>Апартаменты</option><option>Земельные участки</option><option>Машиноместо</option></select></div>
       <div><label>Вид реализации</label><select id="f_kind"><option>Аукцион</option><option>Публичное предложение</option><option>Торги</option><option>Прямая продажа</option><option>Аренда</option></select></div>
       <div class="full"><label>Название лота</label><input id="f_title"></div>
@@ -200,7 +201,7 @@ function renderList(){
 window.openEditor=function(i){
   editing=(i===undefined?-1:i);
   const l=editing>=0?LOTS[editing]:{};
-  $('#f_id').value=l.id||nextId();$('#f_status').value=l.status||'active';
+  $('#f_id').value=l.id||nextId();$('#f_status').value=l.status||'active';$('#f_reserved').value=l.reserved?'1':'';
   const cs=$('#f_cat');if(l.cat&&![...cs.options].some(o=>o.value===l.cat))cs.add(new Option(l.cat,l.cat));
   cs.value=l.cat||'Квартиры';
   const ks=$('#f_kind');if(l.kind&&![...ks.options].some(o=>o.value===l.kind))ks.add(new Option(l.kind,l.kind));
@@ -260,7 +261,7 @@ $('#saveBtn').onclick=async()=>{
     for(const d of pendDocs){const file=d.file||d;toast('Загрузка '+file.name+'…');const o=await readDoc(file);const ts=Date.now();await putFile('docs/'+ts+'-'+o.name,o.b64,'документ '+val('f_id'));curDocs.push({url:'docs/'+ts+'-'+o.name,name:(d.name||file.name.replace(/\.[^.]+$/,''))});}
     pendPhotos=[];pendDocs=[];
     const dates=[...$('#datesRows').children].map(r=>({label:r.children[0].value.trim(),value:r.children[1].value.trim()})).filter(d=>d.label&&d.value);
-    const l={id:val('f_id'),cat:val('f_cat'),kind:val('f_kind'),status:val('f_status'),title:val('f_title'),addr:val('f_addr'),
+    const l={id:val('f_id'),cat:val('f_cat'),kind:val('f_kind'),status:val('f_status'),reserved:val('f_reserved')==='1',title:val('f_title'),addr:val('f_addr'),
       price:val('f_price'),priceNote:val('f_priceNote'),final:val('f_final'),resultType:val('f_resultType'),result:val('f_result'),area:val('f_area'),cadastral:val('f_cadastral'),
       cadCost:val('f_cadCost'),m2:val('f_m2'),bargain:val('f_bargain'),houseLabel:val('f_houseLabel'),house:val('f_house'),
       land:val('f_land'),analyticsLabel:val('f_analyticsLabel'),analytics:val('f_analytics'),transport:val('f_transport'),video:val('f_video'),
