@@ -297,7 +297,7 @@ function cardHTML(l){
         <div><small>${c4[0]}</small>${c4[1]}</div>
       </div>
       <div class="price ${arch?'fin':''}">${arch?(l.final||l.price):(l.price||'—')}<small>${arch?('итоговая цена сделки · начальная '+(l.price||'')):(l.priceNote||'')}</small></div>
-      ${arch&&l.result?`<div class="result ${l.resultType||'sold'}">${l.resultType==='failed'?'Торги не состоялись':'Продан за '+l.result}</div>`:''}
+      ${arch?(l.resultType==='failed'?'<div class="result failed">Торги не состоялись</div>':((l.result||l.final)?`<div class="result sold">Продан за ${l.result||l.final}</div>`:'')):''}
       <button class="btn" data-id="${l.id}">Подробнее</button>
     </div>
   </article>`;
