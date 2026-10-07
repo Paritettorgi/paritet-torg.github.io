@@ -401,7 +401,7 @@
       "priceNote": "начальная цена",
       "final": "58 501 000 ₽",
       "resultType": "sold",
-      "result": "",
+      "result": "58 501 000 ₽",
       "area": "133,9 м²",
       "cadastral": "77:07:0013003:29688",
       "cadCost": "",
@@ -471,7 +471,7 @@
         "images/1790002863123-10.jpg"
       ],
       "docs": [],
-      "archiveDate": 1791372386204
+      "archiveDate": 1791373964304
     },
     {
       "id": "П-2026-009",
