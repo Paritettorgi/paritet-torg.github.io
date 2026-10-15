@@ -329,7 +329,7 @@ $('#saveContactsBtn').onclick=async()=>{
   if(type==='1'){
     result=prompt('Итоговая сумма продажи:');
     if(!result)return;
-    l.resultType='sold';l.result=result;
+    l.resultType='sold';l.result=result;l.final=result;
   }else if(type==='2'){
     l.resultType='failed';l.result='Торги не состоялись';
   }else return;
