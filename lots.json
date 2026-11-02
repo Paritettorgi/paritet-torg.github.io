@@ -1160,15 +1160,15 @@
       "id": "П-2026-017",
       "cat": "Квартиры",
       "kind": "Аукцион",
-      "status": "active",
+      "status": "archive",
       "reserved": false,
       "title": "1-комнатная квартира ЖК Остров",
       "addr": "г. Москва ул. Нижние Мнёвники, д. 12",
       "price": "28 677 260 ₽",
       "priceNote": "Начальная цена",
       "final": "",
-      "resultType": "sold",
-      "result": "",
+      "resultType": "failed",
+      "result": "Торги не состоялись",
       "area": "",
       "cadastral": "77:08:0014001:46590",
       "cadCost": "",
@@ -1204,7 +1204,8 @@
         "images/1792510578529-06.jpg",
         "images/1792510580647-07.jpg"
       ],
-      "docs": []
+      "docs": [],
+      "archiveDate": 1793640366149
     },
     {
       "id": "П-2026-018",
