@@ -1338,15 +1338,15 @@
       "id": "П-2026-020",
       "cat": "Квартиры",
       "kind": "Аукцион",
-      "status": "active",
+      "status": "archive",
       "reserved": false,
       "title": "Квартира 231 м² в Хамовниках",
       "addr": "Москва, 1-й Обыденский переулок, д. 5, кв. 7 (5 этаж)",
       "price": "239 020 000 ₽",
       "priceNote": "",
       "final": "",
-      "resultType": "sold",
-      "result": "",
+      "resultType": "failed",
+      "result": "Торги не состоялись",
       "area": "",
       "cadastral": "77:01:0001051:2485",
       "cadCost": "281 162 366.10 ₽",
@@ -1403,7 +1403,8 @@
         "images/1793277841324-15.jpg",
         "images/1793277845987----.jpg"
       ],
-      "docs": []
+      "docs": [],
+      "archiveDate": 1795702039790
     },
     {
       "id": "П-2026-021",
